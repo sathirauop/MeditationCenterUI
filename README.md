@@ -102,6 +102,9 @@ meditation-center-ui/
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
+- `pnpm pages:build` - Build for Cloudflare Pages deployment
+- `pnpm pages:preview` - Preview Cloudflare Pages build locally
+- `pnpm pages:deploy` - Deploy to Cloudflare Pages via CLI
 
 ## Pages
 
@@ -276,6 +279,69 @@ public class AuthController {
     // Your endpoints
 }
 ```
+
+## Deployment to Cloudflare Pages
+
+This project is configured to deploy to Cloudflare Pages using the `@opennextjs/cloudflare` adapter.
+
+### Method 1: Git-based Deployment (Recommended)
+
+1. **Push your code to GitHub/GitLab**
+   ```bash
+   git add .
+   git commit -m "Ready for Cloudflare deployment"
+   git push origin main
+   ```
+
+2. **Connect to Cloudflare Pages**
+   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - Navigate to **Workers & Pages**
+   - Click **Create application** > **Pages** > **Connect to Git**
+   - Select your repository
+
+3. **Configure build settings**
+   - **Framework preset**: Next.js
+   - **Build command**: `pnpm pages:build`
+   - **Build output directory**: `.open-next/worker`
+   - **Root directory**: (leave as default)
+
+4. **Add environment variables**
+   - Add `NEXT_PUBLIC_API_URL` with your backend API URL
+   - Add `NODE_VERSION` with value `18` or higher
+
+5. **Deploy**
+   - Click **Save and Deploy**
+   - Cloudflare will automatically build and deploy your app
+   - Every push to your main branch will trigger a new deployment
+
+### Method 2: CLI Deployment
+
+1. **Login to Cloudflare**
+   ```bash
+   npx wrangler login
+   ```
+
+2. **Deploy**
+   ```bash
+   pnpm pages:deploy
+   ```
+
+3. **Test locally before deploying**
+   ```bash
+   pnpm pages:preview
+   ```
+
+### Configuration Files
+
+- `wrangler.jsonc` - Cloudflare Workers configuration
+- `open-next.config.ts` - OpenNext adapter configuration
+- `.dev.vars` - Local development environment variables (not committed)
+
+### Important Notes
+
+- The app will run on Cloudflare's edge network with full Next.js SSR support
+- Ensure your backend API has CORS configured to allow your Cloudflare domain
+- Set environment variables in Cloudflare dashboard for production
 
 ## Next Steps
 

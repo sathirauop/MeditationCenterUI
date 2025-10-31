@@ -4,13 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && npx opennextjs-cloudflare",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "preview": "npm run build && wrangler dev",
-    "deploy": "npm run build && wrangler deploy",
-    "upload": "npm run build && wrangler versions upload",
-    "cf-typegen": "wrangler types && move worker-configuration.d.ts env.d.ts"
+    "pages:build": "opennextjs-cloudflare build",
+    "pages:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "pages:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

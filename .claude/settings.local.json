@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:opennext.js.org)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm install)"
+      "Bash(pnpm install)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
