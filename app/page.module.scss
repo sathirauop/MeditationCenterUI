@@ -1,0 +1,219 @@
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingContainer {
+  @include flex-center;
+  @include flex-column;
+  min-height: 100vh;
+  gap: $spacing-md;
+  color: $gray-600;
+}
+
+.header {
+  background-color: $white;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerContent {
+  @include container;
+  @include flex-between;
+  padding-top: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  gap: $spacing-md;
+}
+
+.logo {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $primary-teal;
+  margin: 0;
+
+  @include md {
+    font-size: $font-size-2xl;
+  }
+}
+
+.logoutButton {
+  @include button-base;
+  background-color: $white;
+  color: $gray-700;
+  border: 1px solid $gray-300;
+  padding: $spacing-sm $spacing-lg;
+
+  &:hover:not(:disabled) {
+    background-color: $gray-50;
+    border-color: $gray-400;
+  }
+}
+
+.main {
+  flex: 1;
+  @include container;
+  padding-top: $spacing-2xl;
+  padding-bottom: $spacing-3xl;
+}
+
+.welcomeCard {
+  @include card;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.welcomeHeader {
+  @include flex-center;
+  @include flex-column;
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, $primary-teal, $primary-teal-light);
+  border-radius: $border-radius-full;
+  @include flex-center;
+  margin-bottom: $spacing-lg;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  color: $white;
+}
+
+.welcomeHeader h2 {
+  font-size: $font-size-2xl;
+  color: $gray-900;
+  margin: 0;
+
+  @include md {
+    font-size: $font-size-3xl;
+  }
+}
+
+.welcomeText {
+  font-size: $font-size-lg;
+  color: $gray-600;
+  text-align: center;
+  margin-bottom: $spacing-2xl;
+  line-height: 1.7;
+}
+
+.infoBox {
+  background-color: $gray-50;
+  border-radius: $border-radius-md;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-2xl;
+  border-left: 4px solid $primary-teal;
+
+  h3 {
+    font-size: $font-size-lg;
+    color: $gray-900;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.infoItem {
+  display: flex;
+  gap: $spacing-sm;
+
+  @include md {
+    gap: $spacing-md;
+  }
+}
+
+.infoLabel {
+  font-weight: $font-weight-semibold;
+  color: $gray-700;
+  min-width: 80px;
+}
+
+.infoValue {
+  color: $gray-900;
+}
+
+.features {
+  h3 {
+    font-size: $font-size-xl;
+    color: $gray-900;
+    margin-bottom: $spacing-lg;
+    text-align: center;
+  }
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-lg;
+
+  @include sm {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.featureCard {
+  background-color: $white;
+  border: 2px solid $gray-200;
+  border-radius: $border-radius-md;
+  padding: $spacing-lg;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    border-color: $primary-teal;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  h4 {
+    font-size: $font-size-lg;
+    color: $primary-teal;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    color: $gray-600;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.comingSoon {
+  display: inline-block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $accent-gold;
+  background-color: rgba($accent-gold, 0.1);
+  padding: $spacing-xs $spacing-md;
+  border-radius: $border-radius-full;
+}
+
+.footer {
+  background-color: $white;
+  border-top: 1px solid $gray-200;
+  padding: $spacing-xl 0;
+
+  p {
+    @include container;
+    text-align: center;
+    color: $gray-600;
+    font-size: $font-size-sm;
+    margin: 0;
+  }
+}

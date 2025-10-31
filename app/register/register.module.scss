@@ -1,0 +1,199 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  min-height: 100vh;
+  @include flex-center;
+  @include flex-column;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba($primary-teal, 0.05) 0%, rgba($accent-gold, 0.05) 100%);
+}
+
+.loadingContainer {
+  @include flex-center;
+  @include flex-column;
+  min-height: 100vh;
+  gap: $spacing-md;
+  color: $gray-600;
+}
+
+.registerCard {
+  @include card;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: $shadow-xl;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-2xl;
+
+  h1 {
+    font-size: $font-size-2xl;
+    color: $gray-900;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    color: $gray-600;
+    font-size: $font-size-sm;
+    margin: 0;
+  }
+}
+
+.logoWrapper {
+  @include flex-center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto $spacing-lg;
+  background: linear-gradient(135deg, $primary-teal, $primary-teal-light);
+  border-radius: $border-radius-full;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  color: $white;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $gray-700;
+}
+
+.input {
+  @include input-base;
+
+  &.inputError {
+    border-color: $error;
+
+    &:focus {
+      border-color: $error;
+      box-shadow: 0 0 0 3px rgba($error, 0.1);
+    }
+  }
+}
+
+.hint {
+  font-size: $font-size-sm;
+  color: $gray-600;
+  margin: 0;
+  margin-top: -$spacing-xs;
+}
+
+.errorMessage {
+  font-size: $font-size-sm;
+  color: $error;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.errorAlert {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.3);
+  border-radius: $border-radius-md;
+  color: $error;
+  font-size: $font-size-sm;
+}
+
+.errorIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.successAlert {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-xl;
+  background-color: rgba($success, 0.1);
+  border: 1px solid rgba($success, 0.3);
+  border-radius: $border-radius-md;
+  color: $success;
+
+  h3 {
+    font-size: $font-size-lg;
+    margin: 0 0 $spacing-xs 0;
+    color: $success;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    margin: 0;
+    color: $gray-700;
+  }
+}
+
+.successIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.submitButton {
+  @include button-primary;
+  margin-top: $spacing-md;
+  gap: $spacing-sm;
+
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+  }
+}
+
+.footer {
+  margin-top: $spacing-xl;
+  text-align: center;
+  padding-top: $spacing-xl;
+  border-top: 1px solid $gray-200;
+
+  p {
+    color: $gray-600;
+    font-size: $font-size-sm;
+    margin: 0;
+  }
+}
+
+.link {
+  color: $primary-teal;
+  font-weight: $font-weight-medium;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $primary-teal-dark;
+    text-decoration: underline;
+  }
+}
+
+.pageFooter {
+  margin-top: $spacing-2xl;
+  text-align: center;
+
+  p {
+    color: $gray-600;
+    font-size: $font-size-sm;
+    margin: 0;
+  }
+}
