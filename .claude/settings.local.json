@@ -4,7 +4,11 @@
       "WebFetch(domain:opennext.js.org)",
       "Bash(pnpm add:*)",
       "Bash(pnpm install)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx shadcn@latest add button input card form label)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(timeout 15 pnpm dev:*)"
     ],
     "deny": [],
     "ask": []

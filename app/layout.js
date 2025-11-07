@@ -1,5 +1,5 @@
 import { AuthProvider } from '@/lib/auth-context';
-import '@/styles/globals.scss';
+import './globals.css';
 
 export const metadata = {
   title: 'Isipathana International Meditation Center',
