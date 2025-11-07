@@ -49,12 +49,12 @@ p {
 }
 
 a {
-  color: $primary-teal;
+  color: $blue-500;
   text-decoration: none;
   transition: color $transition-fast;
 
   &:hover {
-    color: $primary-teal-dark;
+    color: $blue-700;
   }
 }
 

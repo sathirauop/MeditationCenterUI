@@ -6,7 +6,7 @@
   @include flex-center;
   @include flex-column;
   padding: $spacing-lg;
-  background: linear-gradient(135deg, rgba($primary-teal, 0.05) 0%, rgba($accent-gold, 0.05) 100%);
+  background: linear-gradient(135deg, rgba($blue-200, 0.1) 0%, rgba($blue-500, 0.1) 100%);
 }
 
 .loadingContainer {
@@ -46,7 +46,7 @@
   width: 80px;
   height: 80px;
   margin: 0 auto $spacing-lg;
-  background: linear-gradient(135deg, $primary-teal, $primary-teal-light);
+  background: linear-gradient(135deg, $blue-300, $blue-600);
   border-radius: $border-radius-full;
 }
 
@@ -140,13 +140,13 @@
 }
 
 .link {
-  color: $primary-teal;
+  color: $blue-500;
   font-weight: $font-weight-medium;
   text-decoration: none;
   transition: color $transition-fast;
 
   &:hover {
-    color: $primary-teal-dark;
+    color: $blue-700;
     text-decoration: underline;
   }
 }

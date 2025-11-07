@@ -65,18 +65,18 @@
   }
 
   &:focus-visible {
-    outline: 2px solid $primary-teal;
+    outline: 2px solid $blue-500;
     outline-offset: 2px;
   }
 }
 
 @mixin button-primary {
   @include button-base;
-  background-color: $primary-teal;
+  background: linear-gradient(135deg, $blue-300 0%, $blue-500 100%);
   color: $white;
 
   &:hover:not(:disabled) {
-    background-color: $primary-teal-dark;
+    background: linear-gradient(135deg, $blue-400 0%, $blue-600 100%);
   }
 }
 
@@ -101,8 +101,8 @@
   outline: none;
 
   &:focus {
-    border-color: $primary-teal;
-    box-shadow: 0 0 0 3px rgba($primary-teal, 0.1);
+    border-color: $blue-500;
+    box-shadow: 0 0 0 3px rgba($blue-500, 0.1);
   }
 
   &::placeholder {
