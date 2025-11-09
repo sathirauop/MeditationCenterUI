@@ -48,7 +48,7 @@ export default function Home() {
                 At Isipathana International Meditation Center, we offer a sanctuary for spiritual growth and inner development. Our center combines ancient Buddhist wisdom with modern meditation techniques, providing a comprehensive approach to mindfulness and enlightenment.
               </p>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Whether you are a beginner seeking peace or an experienced practitioner deepening your practice, our welcoming community offers guidance, support, and authentic teachings rooted in the Buddha's original instructions.
+                Whether you are a beginner seeking peace or an experienced practitioner deepening your practice, our welcoming community offers guidance, support, and authentic teachings rooted in the Buddha&apos;s original instructions.
               </p>
               <Button variant="link" className="text-primary p-0 h-auto">
                 See more...
