@@ -87,7 +87,7 @@ export default function Header() {
           </Link>
 
           {/* Navigation */}
-          <ul className={`hidden lg:flex items-center gap-8 text-sm font-medium transition-colors ${
+          <ul className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${
             isScrolled ? 'text-foreground' : 'text-white'
           }`}>
             <li>
