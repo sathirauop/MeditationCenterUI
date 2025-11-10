@@ -71,22 +71,22 @@ export default function Home() {
             {/* Main Heading */}
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-bold leading-tight max-w-4xl mx-auto">
-                We provide you with practical knowledge about Buddhism.
+                Welcome to Isipathana International Meditation Center
               </h2>
             </div>
 
             <div className="grid md:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
             {/* Left side - Quote Card */}
-            <div className="bg-muted/30 rounded-3xl p-12 shadow-sm">
+            <div className="bg-muted/30 rounded-2xl p-12 shadow-sm">
               <blockquote className="space-y-8">
                 <p className="text-xl md:text-2xl leading-relaxed text-foreground font-light">
-                  The world is the rightful possession of humanity as a whole, not any specific leader, be it a religious figure, or any other individual.
+                At Isipathana International Meditation Center, we offer a sanctuary for spiritual growth and inner development. Our center combines ancient Buddhist wisdom with modern meditation techniques, providing a comprehensive approach to mindfulness and enlightenment.
                 </p>
-                <footer>
+                {/* <footer>
                   <cite className="text-primary text-lg font-semibold not-italic">
-                    His Holiness the Dalai Lama
+                    Tripple Gem Blessings
                   </cite>
-                </footer>
+                </footer> */}
               </blockquote>
 
               <div className="mt-10">
@@ -102,7 +102,7 @@ export default function Home() {
 
             {/* Right side - Image with decorative element */}
             <div className="relative">
-              <div className="relative h-[300px] rounded-3xl overflow-hidden shadow-2xl">
+              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
                 <Image
                   src="/images/meditationHall.jpeg"
                   alt="Buddha statue in meditation center"
