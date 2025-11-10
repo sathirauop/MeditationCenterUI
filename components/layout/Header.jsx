@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function Header() {
@@ -180,6 +180,14 @@ export default function Header() {
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
+                  {user?.role === 'ADMIN' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="cursor-pointer flex items-center">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="cursor-pointer flex items-center">
                       <Settings className="mr-2 h-4 w-4" />

@@ -40,7 +40,7 @@ const registerSchema = z
   });
 
 export default function RegisterPage() {
-  const { register: registerUser, isAuthenticated, loading: authLoading } = useAuth();
+  const { register: registerUser, isAuthenticated, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registerError, setRegisterError] = useState(null);
@@ -62,10 +62,15 @@ export default function RegisterPage() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.push('/');
+    if (!authLoading && isAuthenticated && user) {
+      // Redirect based on user role
+      if (user.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, user, router]);
 
   const onSubmit = async (data) => {
     try {
@@ -75,13 +80,17 @@ export default function RegisterPage() {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...userData } = data;
 
-      await registerUser(userData);
+      const user = await registerUser(userData);
 
       setRegisterSuccess(true);
 
-      // Redirect to home or login after a short delay
+      // Redirect based on user role after a short delay
       setTimeout(() => {
-        router.push('/');
+        if (user?.role === 'ADMIN') {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
       }, 1500);
     } catch (error) {
       setRegisterError(

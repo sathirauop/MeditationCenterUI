@@ -27,7 +27,7 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, isAuthenticated, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState(null);
@@ -46,20 +46,29 @@ export default function LoginPage() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.push('/');
+    if (!authLoading && isAuthenticated && user) {
+      // Redirect based on user role
+      if (user.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, user, router]);
 
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
       setLoginError(null);
 
-      await login(data);
+      const userData = await login(data);
 
-      // Redirect will happen via useEffect
-      router.push('/');
+      // Redirect based on user role
+      if (userData?.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       setLoginError(error.message || 'Login failed. Please check your credentials.');
     } finally {

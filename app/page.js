@@ -1,37 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Phone, Clock, Loader2, AlertCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import EventCard from '@/components/events/EventCard';
-import { getEvents } from '@/lib/api/events';
+import { useEvents } from '@/lib/hooks/use-events';
 
 export default function Home() {
-  const [events, setEvents] = useState([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
-  const [eventsError, setEventsError] = useState(null);
+  // Use React Query hook for events
+  const { data: eventsData, isLoading: eventsLoading, error: eventsError } = useEvents({ limit: 4, offset: 0 });
 
-  // Fetch events on component mount
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setEventsLoading(true);
-        setEventsError(null);
-        const response = await getEvents({ limit: 4, offset: 0 });
-        setEvents(response.data || []);
-      } catch (error) {
-        console.error('Failed to fetch events:', error);
-        setEventsError(error.message || 'Failed to load events. Please try again later.');
-      } finally {
-        setEventsLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
+  // Ensure events is always an array
+  const events = Array.isArray(eventsData) ? eventsData : [];
 
   return (
     <div className="min-h-screen">
