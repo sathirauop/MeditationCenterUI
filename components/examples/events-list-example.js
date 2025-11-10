@@ -62,21 +62,36 @@ export default function EventsListExample() {
     <div className="container mx-auto py-8">
       <h2 className="text-3xl font-bold mb-8">Upcoming Events</h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events?.map((event) => (
-          <Card key={event.id}>
+        {events?.data?.map((event) => (
+          <Card key={event.event_id}>
             <CardHeader>
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <Calendar className="w-6 h-6 text-primary" />
-              </div>
-              <CardTitle>{event.title}</CardTitle>
-              <CardDescription>{event.date}</CardDescription>
+              {event.cover_image_url ? (
+                <div className="w-full h-48 mb-4 rounded-lg overflow-hidden">
+                  <img
+                    src={event.cover_image_url}
+                    alt={event.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Calendar className="w-6 h-6 text-primary" />
+                </div>
+              )}
+              <CardTitle>{event.name}</CardTitle>
+              <CardDescription>
+                {event.event_date} • {event.start_time} - {event.end_time}
+                {event.location && (
+                  <span className="block mt-1">{event.location}</span>
+                )}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">{event.description}</p>
             </CardContent>
             <CardFooter>
               <Button
-                onClick={() => handleRegister(event.id)}
+                onClick={() => handleRegister(event.event_id)}
                 disabled={registerMutation.isPending}
                 className="w-full"
               >

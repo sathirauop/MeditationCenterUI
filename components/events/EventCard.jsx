@@ -7,24 +7,26 @@ import { Button } from '@/components/ui/button';
  * Displays event information in a card format
  *
  * @param {Object} event - Event data object
- * @param {number} event.eventId - Event ID
+ * @param {number} event.event_id - Event ID
  * @param {string} event.name - Event name
  * @param {string} event.description - Event description
- * @param {string} event.eventDate - Event date (YYYY-MM-DD)
- * @param {string} event.startTime - Start time (HH:MM:SS)
- * @param {string} event.endTime - End time (HH:MM:SS)
+ * @param {string} event.event_date - Event date (YYYY-MM-DD)
+ * @param {string} event.start_time - Start time (HH:MM:SS)
+ * @param {string} event.end_time - End time (HH:MM:SS)
  * @param {string} event.location - Event location
- * @param {Array|null} event.images - Array of image URLs
+ * @param {string} event.cover_image_url - Cover image presigned URL from Cloudflare R2
+ * @param {Array|null} event.gallery_image_urls - Array of gallery image presigned URLs
  */
 export default function EventCard({ event }) {
   const {
     name,
     description,
-    eventDate,
-    startTime,
-    endTime,
+    event_date,
+    start_time,
+    end_time,
     location,
-    images
+    cover_image_url,
+    gallery_image_urls
   } = event;
 
   // Truncate description to 150 characters
@@ -32,8 +34,8 @@ export default function EventCard({ event }) {
     ? `${description.substring(0, 150)}...`
     : description;
 
-  // Get the first image or use a placeholder
-  const eventImage = images && images.length > 0 ? images[0] : null;
+  // Use cover image or first gallery image as fallback
+  const eventImage = cover_image_url || (gallery_image_urls && gallery_image_urls.length > 0 ? gallery_image_urls[0] : null);
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer h-full flex flex-col">

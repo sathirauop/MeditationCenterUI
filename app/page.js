@@ -174,7 +174,7 @@ export default function Home() {
           {!eventsLoading && !eventsError && events.length > 0 && (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {events.map((event) => (
-                <EventCard key={event.eventId} event={event} />
+                <EventCard key={event.event_id} event={event} />
               ))}
             </div>
           )}
