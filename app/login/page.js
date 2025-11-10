@@ -7,12 +7,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lightbulb, Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 // Login form validation schema
 const loginSchema = z.object({
@@ -86,8 +87,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-6">
         <Card className="shadow-2xl">
           <CardHeader className="space-y-4 text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg">
-              <Lightbulb className="w-10 h-10 text-white" />
+            <div className="w-24 h-24 mx-auto relative">
+              <Image
+                src="/images/Logo1.jpeg"
+                alt="Isipathana Meditation Center Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
