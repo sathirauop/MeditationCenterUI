@@ -3,18 +3,50 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, Loader2, MapPin, Clock } from 'lucide-react';
+import { Plus, Calendar, Loader2, MapPin, Clock, Trash2, Pencil } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 import CreateEventDialog from '@/components/admin/CreateEventDialog';
-import { useEvents } from '@/lib/hooks/use-events';
+import { useEvents, useDeleteEvent } from '@/lib/hooks/use-events';
 
 export default function EventsManagementPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [deleteEventId, setDeleteEventId] = useState(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(null);
 
   // Use React Query hook - TODO: Replace with admin endpoint when available
   const { data: eventsData, isLoading, error } = useEvents();
+  const deleteEventMutation = useDeleteEvent();
 
   // Ensure events is always an array
   const events = Array.isArray(eventsData) ? eventsData : [];
+
+  // Handle delete event
+  const handleDeleteEvent = async () => {
+    if (!deleteEventId) return;
+
+    try {
+      const response = await deleteEventMutation.mutateAsync(deleteEventId);
+      setDeleteSuccess(response.message || 'Event deleted successfully');
+      setDeleteEventId(null);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setDeleteSuccess(null), 3000);
+    } catch (err) {
+      console.error('Error deleting event:', err);
+      setDeleteEventId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -32,6 +64,26 @@ export default function EventsManagementPage() {
             Create Event
           </Button>
         </div>
+
+        {/* Success Message */}
+        {deleteSuccess && (
+          <Alert className="mb-6 bg-green-50 border-green-200">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
+              {deleteSuccess}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Error Message */}
+        {deleteEventMutation.isError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {deleteEventMutation.error?.message || 'Failed to delete event. Please try again.'}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Events List */}
         <Card>
@@ -75,39 +127,73 @@ export default function EventsManagementPage() {
                     key={event.event_id}
                     className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">{event.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                          {event.description}
-                        </p>
-                        <div className="flex flex-wrap gap-4 text-sm">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Calendar className="h-4 w-4" />
-                            <span>{new Date(event.event_date).toLocaleDateString()}</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Clock className="h-4 w-4" />
-                            <span>{event.start_time} - {event.end_time}</span>
-                          </div>
-                          {event.location && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <MapPin className="h-4 w-4" />
-                              <span>{event.location}</span>
-                            </div>
-                          )}
+                    <div className="flex items-start gap-4">
+                      {/* Cover Image Preview */}
+                      {event.cover_image_url && (
+                        <div className="flex-shrink-0">
+                          <img
+                            src={event.cover_image_url}
+                            alt={event.name}
+                            className="w-24 h-24 object-cover rounded-lg"
+                          />
                         </div>
-                      </div>
-                      <div className="ml-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            event.is_active
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {event.is_active ? 'Active' : 'Inactive'}
-                        </span>
+                      )}
+
+                      {/* Event Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2">{event.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                              {event.description}
+                            </p>
+                            <div className="flex flex-wrap gap-4 text-sm">
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <Calendar className="h-4 w-4" />
+                                <span>{new Date(event.event_date).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>{event.start_time} - {event.end_time}</span>
+                              </div>
+                              {event.location && (
+                                <div className="flex items-center gap-1 text-muted-foreground">
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{event.location}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1">
+                            {/* Edit Button - Coming Soon */}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implement edit functionality when backend is ready
+                                console.log('Edit event:', event.event_id);
+                              }}
+                              className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                              title="Edit event (coming soon)"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+
+                            {/* Delete Button */}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setDeleteEventId(event.event_id)}
+                              disabled={deleteEventMutation.isPending}
+                              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              title="Delete event"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -122,6 +208,38 @@ export default function EventsManagementPage() {
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
         />
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deleteEventId} onOpenChange={(open) => !open && setDeleteEventId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the event
+                and all associated images from the server.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleteEventMutation.isPending}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteEvent}
+                disabled={deleteEventMutation.isPending}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteEventMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Event'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
