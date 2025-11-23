@@ -140,7 +140,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center py-20">
               <AlertCircle className="w-12 h-12 text-destructive mb-4" />
               <p className="text-destructive font-medium mb-2">Failed to Load Events</p>
-              <p className="text-sm text-muted-foreground">{eventsError}</p>
+              <p className="text-sm text-muted-foreground">{eventsError?.message || 'An error occurred'}</p>
             </div>
           )}
 
