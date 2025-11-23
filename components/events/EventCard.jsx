@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDate, formatTimeRange } from '@/lib/utils/date-utils';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 /**
  * EventCard Component
@@ -42,10 +43,11 @@ export default function EventCard({ event }) {
       {/* Image */}
       <div className="relative aspect-[4/3] bg-muted overflow-hidden">
         {eventImage ? (
-          <img
+          <Image
             src={eventImage}
             alt={name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">

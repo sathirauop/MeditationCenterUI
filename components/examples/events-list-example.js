@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Calendar } from 'lucide-react';
+import Image from 'next/image';
 
 /**
  * Example component showing how to fetch and display events
@@ -66,11 +67,12 @@ export default function EventsListExample() {
           <Card key={event.event_id}>
             <CardHeader>
               {event.cover_image_url ? (
-                <div className="w-full h-48 mb-4 rounded-lg overflow-hidden">
-                  <img
+                <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+                  <Image
                     src={event.cover_image_url}
                     alt={event.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               ) : (

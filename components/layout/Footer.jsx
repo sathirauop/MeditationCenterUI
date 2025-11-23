@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function Footer() {
     return (
@@ -21,11 +22,11 @@ export default function Footer() {
                     <div className="space-y-4">
                         <h4 className="font-semibold text-lg">Quick Links</h4>
                         <div className="flex flex-col gap-2 text-sm">
-                            <a href="/about" className="text-muted-foreground hover:text-primary">About Us</a>
-                            <a href="/#programs" className="text-muted-foreground hover:text-primary">Programs</a>
-                            <a href="/#events" className="text-muted-foreground hover:text-primary">Events</a>
-                            <a href="/#blog" className="text-muted-foreground hover:text-primary">Blog</a>
-                            <a href="/#contact" className="text-muted-foreground hover:text-primary">Contact</a>
+                            <Link href="/about" className="text-muted-foreground hover:text-primary">About Us</Link>
+                            <Link href="/#programs" className="text-muted-foreground hover:text-primary">Programs</Link>
+                            <Link href="/#events" className="text-muted-foreground hover:text-primary">Events</Link>
+                            <Link href="/#blog" className="text-muted-foreground hover:text-primary">Blog</Link>
+                            <Link href="/#contact" className="text-muted-foreground hover:text-primary">Contact</Link>
                         </div>
                     </div>
 
@@ -33,11 +34,11 @@ export default function Footer() {
                     <div className="space-y-4">
                         <h4 className="font-semibold text-lg">Resources</h4>
                         <div className="flex flex-col gap-2 text-sm">
-                            <a href="/#teachings" className="text-muted-foreground hover:text-primary">Teachings</a>
-                            <a href="/#schedule" className="text-muted-foreground hover:text-primary">Class Schedule</a>
-                            <a href="/#donate" className="text-muted-foreground hover:text-primary">Donate</a>
-                            <a href="/#volunteer" className="text-muted-foreground hover:text-primary">Volunteer</a>
-                            <a href="/#faq" className="text-muted-foreground hover:text-primary">FAQ</a>
+                            <Link href="/#teachings" className="text-muted-foreground hover:text-primary">Teachings</Link>
+                            <Link href="/#schedule" className="text-muted-foreground hover:text-primary">Class Schedule</Link>
+                            <Link href="/#donate" className="text-muted-foreground hover:text-primary">Donate</Link>
+                            <Link href="/#volunteer" className="text-muted-foreground hover:text-primary">Volunteer</Link>
+                            <Link href="/#faq" className="text-muted-foreground hover:text-primary">FAQ</Link>
                         </div>
                     </div>
 

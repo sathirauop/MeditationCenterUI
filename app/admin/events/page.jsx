@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Calendar, Loader2, MapPin, Clock, Trash2, Pencil } from 'lucide-react';
@@ -131,10 +132,12 @@ export default function EventsManagementPage() {
                       {/* Cover Image Preview */}
                       {event.cover_image_url && (
                         <div className="flex-shrink-0">
-                          <img
+                          <Image
                             src={event.cover_image_url}
                             alt={event.name}
-                            className="w-24 h-24 object-cover rounded-lg"
+                            width={96}
+                            height={96}
+                            className="object-cover rounded-lg"
                           />
                         </div>
                       )}
