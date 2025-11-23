@@ -67,8 +67,8 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-white/95 backdrop-blur-sm border-b shadow-sm'
-          : 'bg-transparent'
+        ? 'bg-white/95 backdrop-blur-sm border-b shadow-sm'
+        : 'bg-transparent'
         }`}
     >
       <nav className="container mx-auto px-6 py-4">
@@ -130,13 +130,13 @@ export default function Header() {
               </div>
             </li>
             <li className="relative group">
-              <a href="#contact" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/contact" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Contact Us
-              </a>
+              </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <a href="#contact-us" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Contact Us</a>
+                <Link href="/contact" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Contact Us</Link>
                 <a href="#faq" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">FAQ</a>
               </div>
             </li>
