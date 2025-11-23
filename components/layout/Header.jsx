@@ -134,10 +134,9 @@ export default function Header() {
                 }`}>
                 Contact Us
               </Link>
-              {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                 <Link href="/contact" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Contact Us</Link>
-                <a href="/#faq" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">FAQ</a>
+                <Link href="/#faq" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">FAQ</Link>
               </div>
             </li>
           </ul>
