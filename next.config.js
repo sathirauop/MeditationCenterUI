@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'meditation-center-events.3fc456e7a90bb6ba0edabe3c4f2fefaf.r2.cloudflarestorage.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   // Security headers
   async headers() {
     return [
