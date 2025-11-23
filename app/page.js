@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Phone, Clock, Loader2, AlertCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import FAQ from '@/components/sections/FAQ';
 import EventCard from '@/components/events/EventCard';
 import { useEvents } from '@/lib/hooks/use-events';
 
@@ -166,6 +167,9 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Contact Us Section */}
       <section id="contact" className="py-20 bg-muted/30">
