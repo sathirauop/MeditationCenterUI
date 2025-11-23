@@ -1,8 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { getEvent } from '@/lib/api/events';
+import { useEvent } from '@/lib/hooks/use-events';
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
@@ -22,12 +21,8 @@ export default function EventDetailsPage() {
     const router = useRouter();
     const eventId = params.eventId;
 
-    // Fetch event data
-    const { data: event, isLoading, error } = useQuery({
-        queryKey: ['event', eventId],
-        queryFn: () => getEvent(eventId),
-        enabled: !!eventId,
-    });
+    // Fetch event data using the useEvent hook
+    const { data: event, isLoading, error } = useEvent(eventId);
 
     // Loading state
     if (isLoading) {
