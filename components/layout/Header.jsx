@@ -89,44 +89,44 @@ export default function Header() {
           <ul className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${isScrolled ? 'text-foreground' : 'text-white'
             }`}>
             <li>
-              <a href="#home" className={`transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/" className={`transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Home
-              </a>
+              </Link>
             </li>
             <li className="relative group">
-              <a href="#programs" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/programs" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Programs & Events
-              </a>
+              </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <a href="#meditation-programs" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Meditation Programs</a>
-                <a href="#other-events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Other Events</a>
+                <Link href="/programs/meditation" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Meditation Programs</Link>
+                <Link href="/programs/events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Other Events</Link>
               </div>
             </li>
             <li className="relative group">
-              <a href="#media" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/media" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Media
-              </a>
+              </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <a href="#books" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Books</a>
-                <a href="#recordings" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Recordings</a>
-                <a href="#blogs" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Blogs</a>
+                <Link href="/media/books" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Books</Link>
+                <Link href="/media/recordings" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Recordings</Link>
+                <Link href="/media/blogs" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Blogs</Link>
               </div>
             </li>
             <li className="relative group">
-              <a href="#about" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/about" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 About
-              </a>
+              </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                 <Link href="/about" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">About Us</Link>
-                <a href="#gallery" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Gallery</a>
-                <a href="#testimonials" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Testimonials</a>
+                <Link href="/gallery" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Gallery</Link>
+                <Link href="/testimonials" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Testimonials</Link>
               </div>
             </li>
             <li className="relative group">
