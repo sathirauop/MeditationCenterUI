@@ -42,9 +42,11 @@ export default function Home() {
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto">
             Join our meditation community and embark on a journey of mindfulness, wisdom, and spiritual growth in the heart of Sri Lanka.
           </p>
-          <Button size="lg" className="bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg">
-            Begin Your Journey
-          </Button>
+          <Link href="/programs/meditation">
+            <Button size="lg" className="bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg">
+              Begin Your Journey
+            </Button>
+          </Link>
         </div>
       </section>
 
@@ -118,9 +120,11 @@ export default function Home() {
                 <p className="text-muted-foreground max-w-3xl">
                   Experience transformative meditation sessions designed for all levels. Our programs combine traditional Buddhist practices with modern mindfulness techniques, guided by experienced instructors in a peaceful environment.
                 </p>
-                <Button size="lg" className="ml-8">
-                  Join
-                </Button>
+                <Link href="/programs/meditation">
+                  <Button size="lg" className="ml-8">
+                    Join
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
