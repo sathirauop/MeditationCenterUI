@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -20,7 +20,14 @@ import { useAuth } from '@/lib/auth-context';
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Check if we are on the home page
+  const isHome = pathname === '/';
+
+  // Determine if header should be opaque (scrolled OR not on home page)
+  const isOpaque = isScrolled || !isHome;
 
   // Track scroll position
   useEffect(() => {
@@ -66,7 +73,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isOpaque
         ? 'bg-white/95 backdrop-blur-sm border-b shadow-sm'
         : 'bg-transparent'
         }`}
@@ -86,27 +93,27 @@ export default function Header() {
           </Link>
 
           {/* Navigation */}
-          <ul className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${isScrolled ? 'text-foreground' : 'text-white'
+          <ul className={`hidden lg:flex items-center gap-8 text-base font-bold transition-colors ${isOpaque ? 'text-foreground' : 'text-white'
             }`}>
             <li>
-              <Link href="/" className={`transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/" className={`transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Home
               </Link>
             </li>
             <li className="relative group">
-              <Link href="/programs" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/programs" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Programs & Events
               </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                 <Link href="/programs/meditation" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Meditation Programs</Link>
-                <Link href="/programs/events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Other Events</Link>
+                <Link href="/events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Other Events</Link>
               </div>
             </li>
             <li className="relative group">
-              <Link href="/media" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/media" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Media
               </Link>
@@ -118,7 +125,7 @@ export default function Header() {
               </div>
             </li>
             <li className="relative group">
-              <Link href="/about" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/about" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 About
               </Link>
@@ -130,7 +137,7 @@ export default function Header() {
               </div>
             </li>
             <li className="relative group">
-              <Link href="/contact" className={`cursor-pointer transition-colors ${isScrolled ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/contact" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 Contact Us
               </Link>
@@ -148,7 +155,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`flex items-center gap-3 hover:opacity-80 transition-all cursor-pointer outline-none ${isScrolled ? 'text-foreground' : 'text-white'
+                    className={`flex items-center gap-3 hover:opacity-80 transition-all cursor-pointer outline-none ${isOpaque ? 'text-foreground' : 'text-white'
                       }`}
                   >
                     <Avatar className="h-10 w-10">
@@ -204,13 +211,13 @@ export default function Header() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className={isScrolled ? '' : 'text-white hover:text-white/80 hover:bg-white/10'}
+                    className={isOpaque ? '' : 'text-white hover:text-white/80 hover:bg-white/10'}
                   >
                     Login
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className={isScrolled ? '' : 'bg-white text-primary hover:bg-white/90'}>
+                  <Button className={isOpaque ? '' : 'bg-white text-primary hover:bg-white/90'}>
                     SignUp
                   </Button>
                 </Link>
