@@ -12,10 +12,11 @@ export default function Page() {
             <main className="flex-1">
                 <ProgramHero />
                 <DailySchedule />
-                <BookingWidget />
                 <ProgramGallery />
+                <BookingWidget />
             </main>
             <Footer />
         </div>
     );
 }
+
