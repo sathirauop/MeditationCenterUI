@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { X } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * EventGallery Component
@@ -22,34 +22,36 @@ export default function EventGallery({ images }) {
 
     return (
         <>
-            <section className="py-20 bg-muted/20 relative overflow-hidden">
-                {/* Decorative Orb */}
-                <div className="absolute bottom-0 left-0 w-[250px] h-[250px] bg-orange-400/20 rounded-full blur-[100px] opacity-30 pointer-events-none" />
-
-                <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <section className="py-12 bg-white">
+                <div className="container mx-auto px-6 sm:px-10 max-w-[960px]">
                     {/* Section Header */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-3">Event Gallery</h2>
-                        <p className="text-lg text-muted-foreground">
-                            Explore moments from our meditation center
-                        </p>
+                    <div className="flex justify-between items-center mb-8">
+                        <h2 className="text-blue-900 text-3xl font-bold leading-tight">Event Gallery</h2>
+                        <div className="flex gap-2">
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-600 hover:bg-blue-900/10 hover:text-blue-900 hover:border-blue-900 transition-colors">
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-600 hover:bg-blue-900/10 hover:text-blue-900 hover:border-blue-900 transition-colors">
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Gallery Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {imageArray.map((imageUrl, index) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                        {imageArray.slice(0, 4).map((imageUrl, index) => (
                             <div
                                 key={index}
-                                className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group"
+                                className="aspect-square w-full bg-center bg-no-repeat bg-cover rounded-lg overflow-hidden cursor-pointer group"
                                 onClick={() => setSelectedImage(imageUrl)}
                             >
                                 <Image
                                     src={imageUrl}
                                     alt={`Gallery image ${index + 1}`}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                    width={300}
+                                    height={300}
+                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
                                 />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                             </div>
                         ))}
                     </div>

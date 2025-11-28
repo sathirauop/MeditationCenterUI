@@ -62,33 +62,29 @@ export default function EventDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-white">
             <Header />
-
-            {/* Back Button - Fixed Position */}
-            <button
-                onClick={() => router.back()}
-                className="fixed top-24 left-6 z-50 bg-white/95 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 font-semibold hover:bg-white"
-            >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-            </button>
 
             {/* Hero Section */}
             <EventHero event={event} />
 
-            {/* Event Details Section */}
-            <section className="py-20 bg-background">
-                <div className="container mx-auto px-6 max-w-7xl">
-                    <div className="grid lg:grid-cols-[400px_1fr] gap-12 items-start">
-                        {/* Left: Quick Info Card */}
-                        <EventDetailsCard event={event} />
-
-                        {/* Right: Description */}
-                        <EventDescription event={event} />
+            {/* Main Content */}
+            <main className="flex-1 px-6 sm:px-10 py-8">
+                <div className="container mx-auto max-w-[960px]">
+                    {/* Event Title and Description */}
+                    <div className="flex flex-col gap-6 pt-2 pb-12">
+                        <h1 className="text-blue-900 text-4xl md:text-5xl font-black leading-tight tracking-tight">
+                            {event.name}
+                        </h1>
+                        <p className="text-gray-700 text-base font-normal leading-relaxed">
+                            {event.description}
+                        </p>
                     </div>
+
+                    {/* Event Details - Horizontal Layout */}
+                    <EventDetailsCard event={event} />
                 </div>
-            </section>
+            </main>
 
             {/* Gallery Section */}
             {event.gallery_image_urls && event.gallery_image_urls.length > 0 && (

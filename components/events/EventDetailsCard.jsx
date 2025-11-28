@@ -1,10 +1,9 @@
 import { formatDate, formatTimeRange } from '@/lib/utils/date-utils';
 import { Calendar, Clock, MapPin } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 
 /**
  * EventDetailsCard Component
- * Displays quick event information in a sticky card
+ * Displays quick event information in a horizontal layout
  * 
  * @param {Object} event - Event data
  */
@@ -30,33 +29,23 @@ export default function EventDetailsCard({ event }) {
     ];
 
     return (
-        <Card className="bg-muted/30 border-2 rounded-2xl p-8 sticky top-24 shadow-lg">
-            <div className="space-y-6">
-                {infoItems.map((item, index) => {
-                    const Icon = item.icon;
-                    return (
-                        <div
-                            key={index}
-                            className="flex gap-4 pb-6 border-b border-border last:border-b-0 last:pb-0"
-                        >
-                            {/* Icon */}
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <Icon className="w-6 h-6 text-primary" />
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                                <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">
-                                    {item.label}
-                                </div>
-                                <div className="text-base font-medium text-foreground break-words">
-                                    {item.value}
-                                </div>
-                            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-y border-gray-200">
+            {infoItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                    <div key={index} className="flex items-start gap-4">
+                        <Icon className="text-blue-900 text-2xl mt-1 w-6 h-6 flex-shrink-0" />
+                        <div>
+                            <p className="text-gray-500 text-sm font-normal leading-normal mb-1">
+                                {item.label}
+                            </p>
+                            <p className="text-gray-900 text-base font-medium leading-normal">
+                                {item.value}
+                            </p>
                         </div>
-                    );
-                })}
-            </div>
-        </Card>
+                    </div>
+                );
+            })}
+        </div>
     );
 }
