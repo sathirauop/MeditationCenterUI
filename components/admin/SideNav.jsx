@@ -25,6 +25,12 @@ const navigationItems = [
     disabled: false
   },
   {
+    name: 'Daily Schedule',
+    href: '/admin/schedule',
+    icon: Calendar,
+    disabled: false
+  },
+  {
     name: 'Events',
     href: '/admin/events',
     icon: Calendar,
@@ -107,7 +113,7 @@ export default function SideNav() {
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href ||
-                           (item.href !== '/admin' && pathname.startsWith(item.href));
+              (item.href !== '/admin' && pathname.startsWith(item.href));
 
             return (
               <Link
