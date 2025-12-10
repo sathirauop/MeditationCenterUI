@@ -1,6 +1,6 @@
 'use client';
 
-import { useEvents, useRegisterForEvent } from '@/lib/hooks';
+import { useEvents } from '@/lib/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -15,27 +15,7 @@ export default function EventsListExample() {
   // Fetch events from the server
   const { data: events, isLoading, isError, error } = useEvents();
 
-  // Mutation for registering for an event
-  const registerMutation = useRegisterForEvent();
 
-  const handleRegister = (eventId) => {
-    registerMutation.mutate(
-      {
-        eventId,
-        registrationData: {
-          /* user registration data */
-        }
-      },
-      {
-        onSuccess: () => {
-          alert('Successfully registered for event!');
-        },
-        onError: (error) => {
-          alert(`Registration failed: ${error.message}`);
-        },
-      }
-    );
-  };
 
   // Loading state
   if (isLoading) {
@@ -93,18 +73,10 @@ export default function EventsListExample() {
             </CardContent>
             <CardFooter>
               <Button
-                onClick={() => handleRegister(event.event_id)}
-                disabled={registerMutation.isPending}
+                disabled={true} // Registration disabled
                 className="w-full"
               >
-                {registerMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registering...
-                  </>
-                ) : (
-                  'Register Now'
-                )}
+                View Details
               </Button>
             </CardFooter>
           </Card>

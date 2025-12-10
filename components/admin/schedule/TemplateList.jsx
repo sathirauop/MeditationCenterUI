@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -16,52 +16,20 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import TemplateEditor from './TemplateEditor';
-import { getTemplates, deleteTemplate, activateTemplate } from '@/lib/api/schedule';
+import { useTemplates, useDeleteTemplate, useActivateTemplate } from '@/lib/hooks/use-schedule';
 
 export default function TemplateList() {
-    const [templates, setTemplates] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [view, setView] = useState('list'); // 'list' or 'editor'
     const [editingTemplateId, setEditingTemplateId] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const { toast } = useToast();
 
-    const fetchTemplates = async () => {
-        try {
-            setLoading(true);
-            const data = await getTemplates();
-            setTemplates(data.data || []); // Handle paginated response
-        } catch (error) {
-            console.error('Failed to fetch templates:', error);
-            // Mock data for development if API fails
-            setTemplates([
-                {
-                    template_id: 1,
-                    name: 'Regular Weekday',
-                    description: 'Standard schedule for Monday-Friday',
-                    is_active: true,
-                    activity_count: 5,
-                    updated_at: '2025-12-01T10:00:00'
-                },
-                {
-                    template_id: 2,
-                    name: 'Weekend Special',
-                    description: 'Relaxed schedule for weekends',
-                    is_active: false,
-                    activity_count: 3,
-                    updated_at: '2025-12-02T11:30:00'
-                }
-            ]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // React Query Hooks
+    const { data: templatesData, isLoading: loading, error } = useTemplates();
+    const deleteTemplateMutation = useDeleteTemplate();
+    const activateTemplateMutation = useActivateTemplate();
 
-    useEffect(() => {
-        if (view === 'list') {
-            fetchTemplates();
-        }
-    }, [view]);
+    const templates = templatesData?.data || [];
 
     const handleCreate = () => {
         setEditingTemplateId(null);
@@ -76,44 +44,44 @@ export default function TemplateList() {
     const handleBack = () => {
         setView('list');
         setEditingTemplateId(null);
-        fetchTemplates();
     };
 
     const handleDelete = async () => {
         if (!deleteId) return;
-        try {
-            await deleteTemplate(deleteId);
-            toast({
-                title: "Success",
-                description: "Template deleted successfully",
-            });
-            fetchTemplates();
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to delete template",
-            });
-        } finally {
-            setDeleteId(null);
-        }
+        deleteTemplateMutation.mutate(deleteId, {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Template deleted successfully",
+                });
+                setDeleteId(null);
+            },
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to delete template",
+                });
+            }
+        });
     };
 
     const handleActivate = async (id) => {
-        try {
-            await activateTemplate(id);
-            toast({
-                title: "Success",
-                description: "Template activated successfully",
-            });
-            fetchTemplates();
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to activate template",
-            });
-        }
+        activateTemplateMutation.mutate(id, {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Template activated successfully",
+                });
+            },
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to activate template",
+                });
+            }
+        });
     };
 
     // Show editor view
@@ -128,6 +96,14 @@ export default function TemplateList() {
 
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    }
+
+    if (error) {
+        return (
+            <div className="text-center py-12 text-red-500">
+                Failed to load templates. Please try again later.
+            </div>
+        );
     }
 
     return (
@@ -211,8 +187,6 @@ export default function TemplateList() {
                 </div>
             )}
 
-
-
             <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -224,7 +198,7 @@ export default function TemplateList() {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                            Delete
+                            {deleteTemplateMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

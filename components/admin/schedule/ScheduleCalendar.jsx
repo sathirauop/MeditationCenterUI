@@ -1,37 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Calendar from 'react-calendar';
 import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { getOverrides } from '@/lib/api/schedule';
+import { useOverrides } from '@/lib/hooks/use-schedule';
 import DateScheduleEditor from './DateScheduleEditor';
 import 'react-calendar/dist/Calendar.css';
 
 export default function ScheduleCalendar() {
     const [selectedDate, setSelectedDate] = useState(null);
-    const [overrideDates, setOverrideDates] = useState([]);
-    const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
     // Fetch overrides to mark dates on calendar
-    const fetchOverrides = async () => {
-        try {
-            setLoading(true);
-            const data = await getOverrides();
-            const dates = (data.data || []).map(o => o.override_date);
-            setOverrideDates(dates);
-        } catch (error) {
-            console.error('Failed to fetch overrides:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: overridesData, isLoading: loading, error } = useOverrides();
 
-    useEffect(() => {
-        fetchOverrides();
-    }, []);
+    const overrideDates = (overridesData?.data || []).map(o => o.override_date);
 
     const handleDateClick = (date) => {
         setSelectedDate(date);
@@ -39,7 +24,6 @@ export default function ScheduleCalendar() {
 
     const handleBack = () => {
         setSelectedDate(null);
-        fetchOverrides();
     };
 
     // Check if a date has an override
@@ -87,6 +71,14 @@ export default function ScheduleCalendar() {
 
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    }
+
+    if (error) {
+        return (
+            <div className="text-center py-12 text-red-500">
+                Failed to load calendar data. Please try again later.
+            </div>
+        );
     }
 
     return (

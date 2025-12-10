@@ -29,9 +29,18 @@ const eventSchema = z.object({
   path: ['endTime'],
 });
 
-export default function EventForm({ onSubmit, isLoading }) {
+export default function EventForm({ onSubmit, isLoading, initialData = null }) {
   const [coverImage, setCoverImage] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
+
+  const defaultValues = initialData ? {
+    name: initialData.name,
+    description: initialData.description,
+    eventDate: initialData.event_date,
+    startTime: initialData.start_time ? initialData.start_time.substring(0, 5) : '', // Trim seconds if present
+    endTime: initialData.end_time ? initialData.end_time.substring(0, 5) : '',
+    location: initialData.location,
+  } : undefined;
 
   const {
     register,
@@ -40,6 +49,7 @@ export default function EventForm({ onSubmit, isLoading }) {
     reset,
   } = useForm({
     resolver: zodResolver(eventSchema),
+    defaultValues,
   });
 
   const handleCoverImageChange = (e) => {
@@ -64,9 +74,11 @@ export default function EventForm({ onSubmit, isLoading }) {
 
   const onFormSubmit = async (data) => {
     await onSubmit(data, coverImage, galleryImages);
-    reset();
-    setCoverImage(null);
-    setGalleryImages([]);
+    if (!initialData) {
+      reset();
+      setCoverImage(null);
+      setGalleryImages([]);
+    }
   };
 
   return (
@@ -227,7 +239,7 @@ export default function EventForm({ onSubmit, isLoading }) {
       <div className="flex justify-end gap-3">
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isLoading ? 'Creating...' : 'Create Event'}
+          {isLoading ? (initialData ? 'Updating...' : 'Creating...') : (initialData ? 'Update Event' : 'Create Event')}
         </Button>
       </div>
     </form>

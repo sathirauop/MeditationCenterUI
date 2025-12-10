@@ -17,11 +17,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
-import CreateEventDialog from '@/components/admin/CreateEventDialog';
+import EventDialog from '@/components/admin/EventDialog';
 import { useEvents, useDeleteEvent } from '@/lib/hooks/use-events';
 
 export default function EventsManagementPage() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
   const [deleteEventId, setDeleteEventId] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(null);
 
@@ -31,6 +32,16 @@ export default function EventsManagementPage() {
 
   // Ensure events is always an array
   const events = Array.isArray(eventsData) ? eventsData : [];
+
+  const handleCreateClick = () => {
+    setEditingEvent(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditClick = (event) => {
+    setEditingEvent(event);
+    setIsDialogOpen(true);
+  };
 
   // Handle delete event
   const handleDeleteEvent = async () => {
@@ -60,7 +71,7 @@ export default function EventsManagementPage() {
               Create and manage meditation center events
             </p>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Button onClick={handleCreateClick}>
             <Plus className="mr-2 h-4 w-4" />
             Create Event
           </Button>
@@ -116,7 +127,7 @@ export default function EventsManagementPage() {
                 <p className="text-muted-foreground mb-6 max-w-sm">
                   Get started by creating your first event. Events will appear here once created.
                 </p>
-                <Button onClick={() => setIsCreateDialogOpen(true)}>
+                <Button onClick={handleCreateClick}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First Event
                 </Button>
@@ -170,16 +181,13 @@ export default function EventsManagementPage() {
 
                           {/* Action Buttons */}
                           <div className="flex items-center gap-1">
-                            {/* Edit Button - Coming Soon */}
+                            {/* Edit Button */}
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => {
-                                // TODO: Implement edit functionality when backend is ready
-                                console.log('Edit event:', event.event_id);
-                              }}
+                              onClick={() => handleEditClick(event)}
                               className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-                              title="Edit event (coming soon)"
+                              title="Edit event"
                             >
                               <Pencil className="h-4 w-4" />
                             </Button>
@@ -206,10 +214,11 @@ export default function EventsManagementPage() {
           </CardContent>
         </Card>
 
-        {/* Create Event Dialog */}
-        <CreateEventDialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
+        {/* Create/Edit Event Dialog */}
+        <EventDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          eventToEdit={editingEvent}
         />
 
         {/* Delete Confirmation Dialog */}

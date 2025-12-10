@@ -1,19 +1,17 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Calendar from 'react-calendar';
 import { Loader2, Clock, XCircle, Printer, Share2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { getSchedulePreview } from '@/lib/api/schedule';
+import { useSchedulePreview } from '@/lib/hooks/use-schedule';
 import { cn } from '@/lib/utils';
 import 'react-calendar/dist/Calendar.css';
 
 export default function SchedulePreview() {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [schedule, setSchedule] = useState(null);
-    const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
     const dateStr = useMemo(() => {
@@ -29,23 +27,8 @@ export default function SchedulePreview() {
         });
     }, [selectedDate]);
 
-    // Fetch schedule for date
-    useEffect(() => {
-        const fetchSchedule = async () => {
-            try {
-                setLoading(true);
-                const data = await getSchedulePreview(dateStr);
-                setSchedule(data);
-            } catch (error) {
-                console.error('Failed to fetch schedule:', error);
-                setSchedule(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSchedule();
-    }, [dateStr]);
+    // React Query Hook
+    const { data: schedule, isLoading: loading, error } = useSchedulePreview(dateStr);
 
     const handlePrint = () => {
         window.print();
@@ -129,6 +112,10 @@ export default function SchedulePreview() {
                     {loading ? (
                         <div className="flex items-center justify-center h-64">
                             <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+                        </div>
+                    ) : error ? (
+                        <div className="flex flex-col items-center justify-center h-64 text-red-500 border-2 border-dashed rounded-lg border-red-200 bg-red-50">
+                            <p>Failed to load schedule</p>
                         </div>
                     ) : !schedule || !schedule.activities || schedule.activities.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-64 text-gray-400 border-2 border-dashed rounded-lg">

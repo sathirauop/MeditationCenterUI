@@ -36,7 +36,7 @@ import {
     updateOverride,
     getOverride,
     getActivities,
-    createOverrideFromTemplate
+    getActiveTemplate
 } from '@/lib/api/schedule';
 
 const activitySchema = z.object({
@@ -151,27 +151,28 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
 
         try {
             setLoading(true);
-            // We'll use the createOverrideFromTemplate API but just to get the data structure
-            // In a real app, we might want a separate endpoint just to fetch active template activities
-            // For now, let's assume we can just fetch the active template
-            // Since the API client doesn't have getActiveTemplate exposed directly, we'll simulate it
-            // or we can just try to create it directly if that's the intended workflow
+            const templateData = await getActiveTemplate();
 
-            // Actually, the requirement says "POST /api/admin/overrides/from-template" creates it.
-            // But here we are in a form, maybe we want to preview it first?
-            // If the user clicks "Copy from Template", we probably want to populate the form fields
-            // with the active template's activities.
+            if (templateData && templateData.activities) {
+                // Populate form with template activities
+                const newActivities = templateData.activities.map(a => ({
+                    activity_id: a.activity_id.toString(),
+                    start_time: a.start_time,
+                    end_time: a.end_time,
+                    notes: a.notes || '',
+                    is_cancelled: false
+                }));
 
-            // Let's try to fetch templates and find the active one
-            // This is a bit of a workaround since we don't have a direct "get active template activities" endpoint in the client yet
-            // But we can add it or just fetch all templates and filter
+                // Clear existing activities and append new ones
+                form.setValue('activities', newActivities);
 
-            // For now, let's just use the createOverrideFromTemplate directly if it's a new override
-            if (!override) {
-                await createOverrideFromTemplate({ override_date: date });
-                toast({ title: "Success", description: "Override created from active template" });
-                onSuccess();
-                return;
+                toast({ title: "Success", description: "Activities copied from active template" });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Info",
+                    description: "No active template or activities found",
+                });
             }
         } catch (error) {
             console.error('Copy template error:', error);
@@ -200,7 +201,18 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
                 await updateOverride(override.override_id, payload);
                 toast({ title: "Success", description: "Override updated successfully" });
             } else {
-                await createOverride(payload);
+                // Use camelCase keys for creation payload as per docs
+                const createPayload = {
+                    overrideDate: payload.override_date,
+                    activities: payload.activities.map(a => ({
+                        activityId: a.activity_id,
+                        startTime: a.start_time,
+                        endTime: a.end_time,
+                        notes: a.notes,
+                        isCancelled: a.is_cancelled
+                    }))
+                };
+                await createOverride(createPayload);
                 toast({ title: "Success", description: "Override created successfully" });
             }
             onSuccess();

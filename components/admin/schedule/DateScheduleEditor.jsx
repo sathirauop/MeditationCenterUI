@@ -17,21 +17,17 @@ import {
 } from '@/components/ui/alert-dialog';
 import TimelineEditor from './TimelineEditor';
 import {
-    getOverrides,
-    getOverride,
-    createOverrideFromTemplate,
-    updateOverride,
-    deleteOverride,
-    getActivities,
-    getSchedulePreview
-} from '@/lib/api/schedule';
+    useActivities,
+    useSchedulePreview,
+    useUpdateOverride,
+    useCreateOverride,
+    useDeleteOverride
+} from '@/lib/hooks/use-schedule';
 
 export default function DateScheduleEditor({ date, onBack }) {
     const { toast } = useToast();
 
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [availableActivities, setAvailableActivities] = useState([]);
     const [activities, setActivities] = useState([]);
     const [overrideId, setOverrideId] = useState(null);
     const [isFromTemplate, setIsFromTemplate] = useState(true);
@@ -51,60 +47,49 @@ export default function DateScheduleEditor({ date, onBack }) {
         });
     }, [date]);
 
-    // Fetch schedule for date
+    // React Query Hooks
+    const { data: activitiesData, isLoading: loadingActivities } = useActivities();
+    const { data: previewData, isLoading: loadingPreview, error: previewError } = useSchedulePreview(dateStr);
+
+    const updateOverrideMutation = useUpdateOverride();
+    const createOverrideMutation = useCreateOverride();
+    const deleteOverrideMutation = useDeleteOverride();
+
+    const availableActivities = activitiesData?.data || [];
+
+    // Initialize state from preview data
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-
-                // Fetch available activities
-                const activitiesData = await getActivities();
-                setAvailableActivities(activitiesData.data || []);
-
-                // Fetch schedule preview for this date
-                const preview = await getSchedulePreview(dateStr);
-
-                if (preview.is_override && preview.override_id) {
-                    // Date has an override
-                    setOverrideId(preview.override_id);
-                    setIsFromTemplate(false);
-                    setActivities((preview.activities || []).map((a, idx) => ({
-                        id: a.override_activity_id || `existing-${idx}`,
-                        activity_id: a.activity_id,
-                        activity_title: a.activity_title || a.title,
-                        start_time: a.start_time,
-                        end_time: a.end_time,
-                        notes: a.notes || '',
-                        is_cancelled: a.is_cancelled || false,
-                    })));
-                } else {
-                    // Date uses template
-                    setOverrideId(null);
-                    setIsFromTemplate(true);
-                    setActivities((preview.activities || []).map((a, idx) => ({
-                        id: `template-${idx}`,
-                        activity_id: a.activity_id,
-                        activity_title: a.activity_title || a.title,
-                        start_time: a.start_time,
-                        end_time: a.end_time,
-                        notes: a.notes || '',
-                        is_cancelled: false,
-                    })));
-                }
-            } catch (error) {
-                console.error('Failed to fetch schedule:', error);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Failed to load schedule for this date",
-                });
-            } finally {
-                setLoading(false);
+        if (previewData) {
+            if (previewData.is_override && previewData.override_id) {
+                // Date has an override
+                setOverrideId(previewData.override_id);
+                setIsFromTemplate(false);
+                setActivities((previewData.activities || []).map((a, idx) => ({
+                    id: a.override_activity_id || `existing-${idx}`,
+                    activity_id: a.activity_id,
+                    activity_title: a.activity_title || a.title,
+                    start_time: a.start_time,
+                    end_time: a.end_time,
+                    notes: a.notes || '',
+                    is_cancelled: a.is_cancelled || false,
+                })));
+            } else {
+                // Date uses template
+                setOverrideId(null);
+                setIsFromTemplate(true);
+                setActivities((previewData.activities || []).map((a, idx) => ({
+                    id: `template-${idx}`,
+                    activity_id: a.activity_id,
+                    activity_title: a.activity_title || a.title,
+                    start_time: a.start_time,
+                    end_time: a.end_time,
+                    notes: a.notes || '',
+                    is_cancelled: false,
+                })));
             }
-        };
-
-        fetchData();
-    }, [dateStr, toast]);
+            setHasChanges(false);
+        }
+    }, [previewData]);
 
     const handleActivitiesChange = (newActivities) => {
         setActivities(newActivities);
@@ -112,11 +97,43 @@ export default function DateScheduleEditor({ date, onBack }) {
     };
 
     const handleSave = async () => {
-        try {
-            setSaving(true);
+        setSaving(true);
 
-            const payload = {
-                override_date: dateStr,
+        const payload = {
+            override_date: dateStr,
+            activities: activities.map(a => ({
+                activityId: a.activity_id,
+                startTime: a.start_time,
+                endTime: a.end_time,
+                notes: a.notes,
+                isCancelled: a.is_cancelled || false,
+            })),
+        };
+
+        const onSuccess = () => {
+            setSaving(false);
+            setHasChanges(false);
+            toast({ title: "Success", description: "Schedule saved successfully" });
+        };
+
+        const onError = (error) => {
+            setSaving(false);
+            console.error('Save error:', error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: error.message || "Failed to save schedule",
+            });
+        };
+
+        if (overrideId) {
+            // Update existing override
+            updateOverrideMutation.mutate({ id: overrideId, data: payload }, { onSuccess, onError });
+        } else {
+            // Create new override
+            // Use overrideDate to match API documentation
+            const createPayload = {
+                overrideDate: dateStr,
                 activities: activities.map(a => ({
                     activityId: a.activity_id,
                     startTime: a.start_time,
@@ -126,55 +143,56 @@ export default function DateScheduleEditor({ date, onBack }) {
                 })),
             };
 
-            if (overrideId) {
-                // Update existing override
-                await updateOverride(overrideId, payload);
-            } else {
-                // Create new override
-                const result = await createOverrideFromTemplate(payload);
-                setOverrideId(result.override_id);
-            }
-
-            setIsFromTemplate(false);
-            setHasChanges(false);
-            toast({ title: "Success", description: "Schedule saved successfully" });
-        } catch (error) {
-            console.error('Save error:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.message || "Failed to save schedule",
+            createOverrideMutation.mutate(createPayload, {
+                onSuccess: (data) => {
+                    setOverrideId(data.override_id);
+                    setIsFromTemplate(false);
+                    onSuccess();
+                },
+                onError
             });
-        } finally {
-            setSaving(false);
         }
     };
 
     const handleRevert = async () => {
         if (!overrideId) return;
 
-        try {
-            setSaving(true);
-            await deleteOverride(overrideId);
-            toast({ title: "Success", description: "Schedule reverted to default template" });
-            setShowRevertDialog(false);
-            onBack();
-        } catch (error) {
-            console.error('Revert error:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to revert schedule",
-            });
-        } finally {
-            setSaving(false);
-        }
+        setSaving(true);
+        deleteOverrideMutation.mutate(overrideId, {
+            onSuccess: () => {
+                setSaving(false);
+                toast({ title: "Success", description: "Schedule reverted to default template" });
+                setShowRevertDialog(false);
+                onBack();
+            },
+            onError: (error) => {
+                setSaving(false);
+                console.error('Revert error:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to revert schedule",
+                });
+            }
+        });
     };
 
-    if (loading) {
+    if (loadingActivities || loadingPreview) {
         return (
             <div className="flex items-center justify-center h-64">
                 <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+            </div>
+        );
+    }
+
+    if (previewError) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-red-500">
+                <AlertTriangle className="w-8 h-8 mb-2" />
+                <p>Failed to load schedule for this date</p>
+                <Button variant="outline" onClick={onBack} className="mt-4">
+                    Go Back
+                </Button>
             </div>
         );
     }

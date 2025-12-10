@@ -35,7 +35,7 @@ All requests automatically include the `Authorization: Bearer {token}` header if
 ### 1. Direct API Functions (Recommended)
 
 ```javascript
-import { loginUser, getEvents, registerForEvent } from '@/lib/api';
+import { loginUser, getEvents } from '@/lib/api';
 
 // Login
 try {
@@ -48,8 +48,7 @@ try {
 // Get events
 const events = await getEvents({ category: 'meditation' });
 
-// Register for event
-await registerForEvent(eventId, { name, email, phone });
+
 ```
 
 ### 2. Generic CRUD Operations
@@ -177,7 +176,8 @@ const event = await createEvent({
 
 ### `updateEvent(eventId, eventData)` (Admin only)
 ```javascript
-const updated = await updateEvent('123', { capacity: 60 });
+// Note: This endpoint is now handled directly in use-events.js via generic api.patch
+const updated = await api.patch('/admin/event/123', { capacity: 60 });
 // Returns: Updated event
 ```
 
@@ -187,15 +187,7 @@ await deleteEvent('123');
 // Returns: void
 ```
 
-### `registerForEvent(eventId, registrationData)`
-```javascript
-await registerForEvent('123', {
-  name: 'John Doe',
-  email: 'john@example.com',
-  phone: '+94771234567',
-});
-// Returns: Registration confirmation
-```
+
 
 ## Adding New API Modules
 
@@ -239,7 +231,7 @@ Use these API functions with TanStack Query hooks:
 ```javascript
 // lib/hooks/use-events.js
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getEvents, registerForEvent } from '@/lib/api';
+import { getEvents } from '@/lib/api';
 
 export function useEvents(filters) {
   return useQuery({
@@ -248,12 +240,7 @@ export function useEvents(filters) {
   });
 }
 
-export function useRegisterForEvent() {
-  return useMutation({
-    mutationFn: ({ eventId, data }) => registerForEvent(eventId, data),
-  });
-}
-```
+
 
 ## Best Practices
 

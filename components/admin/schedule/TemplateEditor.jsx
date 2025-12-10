@@ -9,15 +9,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import TimelineEditor from './TimelineEditor';
-import { getTemplate, createTemplate, updateTemplate, getActivities } from '@/lib/api/schedule';
+import {
+    useActivities,
+    useTemplate,
+    useCreateTemplate,
+    useUpdateTemplate
+} from '@/lib/hooks/use-schedule';
 
 export default function TemplateEditor({ templateId = null, onBack }) {
     const router = useRouter();
     const { toast } = useToast();
 
-    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [availableActivities, setAvailableActivities] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -25,52 +28,32 @@ export default function TemplateEditor({ templateId = null, onBack }) {
         activities: [],
     });
 
-    // Fetch available activities
-    useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const data = await getActivities();
-                setAvailableActivities(data.data || []);
-            } catch (error) {
-                console.error('Failed to fetch activities:', error);
-            }
-        };
-        fetchActivities();
-    }, []);
+    // React Query Hooks
+    const { data: activitiesData, isLoading: loadingActivities } = useActivities();
+    const { data: templateData, isLoading: loadingTemplate, error: templateError } = useTemplate(templateId);
 
-    // Fetch template if editing
+    const createTemplateMutation = useCreateTemplate();
+    const updateTemplateMutation = useUpdateTemplate();
+
+    const availableActivities = activitiesData?.data || [];
+
+    // Initialize state from template data
     useEffect(() => {
-        if (templateId) {
-            const fetchTemplate = async () => {
-                try {
-                    setLoading(true);
-                    const data = await getTemplate(templateId);
-                    setFormData({
-                        name: data.name,
-                        description: data.description || '',
-                        activities: (data.activities || []).map((a, idx) => ({
-                            id: a.template_activity_id || `existing-${idx}`,
-                            activity_id: a.activity_id,
-                            activity_title: a.activity_title,
-                            start_time: a.start_time,
-                            end_time: a.end_time,
-                            notes: a.notes || '',
-                        })),
-                    });
-                } catch (error) {
-                    console.error('Failed to fetch template:', error);
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: "Failed to load template",
-                    });
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchTemplate();
+        if (templateId && templateData) {
+            setFormData({
+                name: templateData.name,
+                description: templateData.description || '',
+                activities: (templateData.activities || []).map((a, idx) => ({
+                    id: a.template_activity_id || `existing-${idx}`,
+                    activity_id: a.activity_id,
+                    activity_title: a.activity_title,
+                    start_time: a.start_time,
+                    end_time: a.end_time,
+                    notes: a.notes || '',
+                })),
+            });
         }
-    }, [templateId, toast]);
+    }, [templateId, templateData]);
 
     const handleSave = async () => {
         if (!formData.name.trim()) {
@@ -91,43 +74,56 @@ export default function TemplateEditor({ templateId = null, onBack }) {
             return;
         }
 
-        try {
-            setSaving(true);
-            const payload = {
-                name: formData.name,
-                description: formData.description,
-                activities: formData.activities.map(a => ({
-                    activityId: a.activity_id,
-                    startTime: a.start_time,
-                    endTime: a.end_time,
-                    notes: a.notes,
-                })),
-            };
+        setSaving(true);
+        const payload = {
+            name: formData.name,
+            description: formData.description,
+            activities: formData.activities.map(a => ({
+                activityId: a.activity_id,
+                startTime: a.start_time,
+                endTime: a.end_time,
+                notes: a.notes,
+            })),
+        };
 
-            if (templateId) {
-                await updateTemplate(templateId, payload);
-                toast({ title: "Success", description: "Template updated successfully" });
-            } else {
-                await createTemplate(payload);
-                toast({ title: "Success", description: "Template created successfully" });
-            }
+        const onSuccess = () => {
+            setSaving(false);
+            toast({ title: "Success", description: templateId ? "Template updated successfully" : "Template created successfully" });
             onBack?.();
-        } catch (error) {
+        };
+
+        const onError = (error) => {
+            setSaving(false);
             console.error('Save error:', error);
             toast({
                 variant: "destructive",
                 title: "Error",
                 description: error.message || "Failed to save template",
             });
-        } finally {
-            setSaving(false);
+        };
+
+        if (templateId) {
+            updateTemplateMutation.mutate({ id: templateId, data: payload }, { onSuccess, onError });
+        } else {
+            createTemplateMutation.mutate(payload, { onSuccess, onError });
         }
     };
 
-    if (loading) {
+    if (loadingActivities || (templateId && loadingTemplate)) {
         return (
             <div className="flex items-center justify-center h-64">
                 <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+            </div>
+        );
+    }
+
+    if (templateId && templateError) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-red-500">
+                <p>Failed to load template</p>
+                <Button variant="outline" onClick={onBack} className="mt-4">
+                    Go Back
+                </Button>
             </div>
         );
     }
