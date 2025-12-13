@@ -9,6 +9,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'meditation-center-programs.3fc456e7a90bb6ba0edabe3c4f2fefaf.r2.cloudflarestorage.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'r2.meditation-center.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   // Security headers

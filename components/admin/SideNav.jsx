@@ -25,8 +25,8 @@ const navigationItems = [
     disabled: false
   },
   {
-    name: 'Daily Schedule',
-    href: '/admin/schedule',
+    name: 'Meditation Program',
+    href: '/admin/meditation-program',
     icon: Calendar,
     disabled: false
   },

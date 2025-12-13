@@ -41,7 +41,7 @@ export default function AdminLayout({ children }) {
       <SideNav />
 
       {/* Main Content Area - offset by sidebar width */}
-      <main className="lg:ml-64 min-h-screen">
+      <main className="lg:ml-64 min-h-screen p-8">
         {children}
       </main>
     </div>

@@ -2,14 +2,18 @@
 
 import Image from 'next/image';
 
-const images = [
-    { src: '/images/temple2.webp', alt: 'Meditation Hall' },
-    { src: '/images/meditationHall.jpeg', alt: 'Group Meditation' },
-    { src: '/images/temple2.webp', alt: 'Garden Walk' },
-    { src: '/images/meditationHall.jpeg', alt: 'Evening Chanting' },
-];
+export default function ProgramGallery({ images: propImages }) {
+    const defaultImages = [
+        { src: '/images/temple2.webp', alt: 'Meditation Hall' },
+        { src: '/images/meditationHall.jpeg', alt: 'Group Meditation' },
+        { src: '/images/temple2.webp', alt: 'Garden Walk' },
+        { src: '/images/meditationHall.jpeg', alt: 'Evening Chanting' },
+    ];
 
-export default function ProgramGallery() {
+    const images = (propImages && propImages.length > 0)
+        ? propImages.map((src, i) => ({ src, alt: `Gallery Image ${i + 1}` }))
+        : defaultImages;
+
     return (
         <section className="py-20 bg-white">
             <div className="container mx-auto px-6">
