@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-export default function ProgramHero() {
+export default function ProgramHero({ title, description, coverImage }) {
     return (
         <section className="relative pt-20 bg-white">
             {/* Hero Container with rounded image */}
@@ -10,8 +10,8 @@ export default function ProgramHero() {
                 <div className="relative h-[60vh] rounded-2xl overflow-hidden">
                     {/* Background Image */}
                     <Image
-                        src="/images/temple2.webp"
-                        alt="Meditation Environment"
+                        src={coverImage || "/images/temple2.webp"}
+                        alt={title || "Meditation Environment"}
                         fill
                         style={{ objectFit: 'cover' }}
                         priority
@@ -22,10 +22,10 @@ export default function ProgramHero() {
                     <div className="relative z-10 h-full flex items-center justify-center px-6 text-center text-white">
                         <div className="max-w-3xl">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                                Meditation Programs
+                                {title || "Meditation Programs"}
                             </h1>
                             <p className="text-base md:text-lg text-white/90 leading-relaxed">
-                                Discover the path to inner peace and clarity through our immersive Vipassana meditation program. This program is designed to guide participants in the practice of mindfulness, helping to cultivate a deeper understanding of the mind and body. Suitable for both beginners and experienced practitioners, our retreat provides a supportive and tranquil environment for profound personal growth.
+                                {description || "Discover the path to inner peace and clarity through our immersive Vipassana meditation program. This program is designed to guide participants in the practice of mindfulness, helping to cultivate a deeper understanding of the mind and body. Suitable for both beginners and experienced practitioners, our retreat provides a supportive and tranquil environment for profound personal growth."}
                             </p>
                         </div>
                     </div>

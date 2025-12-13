@@ -5,9 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar as CalendarIcon, Users } from 'lucide-react';
 
-export default function BookingWidget() {
+export default function BookingWidget({ maxSeats = 50 }) {
     const [selectedDate, setSelectedDate] = useState('');
     const [seats, setSeats] = useState(1);
+
+    // Limit max selectable seats per booking (e.g., max 10 or program max)
+    const maxSelectable = Math.min(maxSeats || 50, 10);
+    const seatOptions = Array.from({ length: maxSelectable }, (_, i) => i + 1);
 
     return (
         <section className="py-20 bg-gray-50" id="booking">
@@ -51,12 +55,13 @@ export default function BookingWidget() {
                                             onChange={(e) => setSeats(Number(e.target.value))}
                                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-900 focus:outline-none transition-colors"
                                         >
-                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                            {seatOptions.map(num => (
                                                 <option key={num} value={num}>{num} Seat{num > 1 ? 's' : ''}</option>
                                             ))}
                                         </select>
                                     </div>
                                 </div>
+                                {/* ... */}
 
                                 {/* Reserve Button */}
                                 <Button
