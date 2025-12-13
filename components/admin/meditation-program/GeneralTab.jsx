@@ -311,6 +311,7 @@ export default function GeneralTab() {
                         {/* Current or Preview Cover Image */}
                         {(coverImagePreview || existingCoverImage) && (
                             <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden border border-gray-200">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={coverImagePreview || existingCoverImage}
                                     alt="Cover"
@@ -367,6 +368,7 @@ export default function GeneralTab() {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {existingGalleryImages.map((url, index) => (
                                         <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={url}
                                                 alt={`Gallery ${index + 1}`}
@@ -385,6 +387,7 @@ export default function GeneralTab() {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {galleryPreviews.map((preview, index) => (
                                         <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={preview}
                                                 alt={`New gallery ${index + 1}`}

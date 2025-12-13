@@ -22,7 +22,7 @@ export default function BookingTab() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <p className="text-gray-600 leading-relaxed">
-                        We're working on an amazing booking management feature that will allow you to:
+                        We&apos;re working on an amazing booking management feature that will allow you to:
                     </p>
                     <ul className="text-left text-gray-600 space-y-2 max-w-sm mx-auto">
                         <li className="flex items-start gap-2">

@@ -191,6 +191,7 @@ export default function SchedulePreview() {
                                     {/* Media Thumbnail */}
                                     {activity.media_url && !activity.is_cancelled && (
                                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={activity.media_url}
                                                 alt={activity.title}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,7 +33,7 @@ export default function ActivityList() {
     const [deleteId, setDeleteId] = useState(null);
     const { toast } = useToast();
 
-    const fetchActivities = async () => {
+    const fetchActivities = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getActivities();
@@ -48,11 +48,11 @@ export default function ActivityList() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
         fetchActivities();
-    }, []);
+    }, [fetchActivities]);
 
     const handleCreate = () => {
         setSelectedActivity(null);
