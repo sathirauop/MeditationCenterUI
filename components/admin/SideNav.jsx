@@ -37,6 +37,12 @@ const navigationItems = [
     disabled: false
   },
   {
+    name: 'Books',
+    href: '/admin/books',
+    icon: BookOpen,
+    disabled: false
+  },
+  {
     name: 'Users',
     href: '/admin/users',
     icon: Users,
