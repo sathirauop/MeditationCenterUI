@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { useOverrides } from '@/lib/hooks/use-schedule';
+import { formatDateToISO } from '@/lib/utils/date-utils';
 import DateScheduleEditor from './DateScheduleEditor';
 import 'react-calendar/dist/Calendar.css';
 
@@ -28,7 +29,7 @@ export default function ScheduleCalendar() {
 
     // Check if a date has an override
     const hasOverride = (date) => {
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = formatDateToISO(date);
         return overrideDates.includes(dateStr);
     };
 

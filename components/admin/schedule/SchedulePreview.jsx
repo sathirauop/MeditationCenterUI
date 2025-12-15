@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useSchedulePreview } from '@/lib/hooks/use-schedule';
 import { cn } from '@/lib/utils';
+import { formatDateToISO } from '@/lib/utils/date-utils';
 import 'react-calendar/dist/Calendar.css';
 
 export default function SchedulePreview() {
@@ -15,7 +16,7 @@ export default function SchedulePreview() {
     const { toast } = useToast();
 
     const dateStr = useMemo(() => {
-        return selectedDate.toISOString().split('T')[0];
+        return formatDateToISO(selectedDate);
     }, [selectedDate]);
 
     const formattedDate = useMemo(() => {

@@ -23,6 +23,7 @@ import {
     useCreateOverride,
     useDeleteOverride
 } from '@/lib/hooks/use-schedule';
+import { formatDateToISO } from '@/lib/utils/date-utils';
 
 export default function DateScheduleEditor({ date, onBack }) {
     const { toast } = useToast();
@@ -35,7 +36,7 @@ export default function DateScheduleEditor({ date, onBack }) {
     const [hasChanges, setHasChanges] = useState(false);
 
     const dateStr = useMemo(() => {
-        return date.toISOString().split('T')[0];
+        return formatDateToISO(date);
     }, [date]);
 
     const formattedDate = useMemo(() => {
