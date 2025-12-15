@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
-import { updateBook } from '@/lib/api/books';
+import { useUpdateBook } from '@/lib/hooks/use-books';
 
 // Validation schema
 const editBookSchema = z.object({
@@ -38,8 +37,9 @@ const editBookSchema = z.object({
 });
 
 export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) {
-    const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
+
+    const updateBookMutation = useUpdateBook();
 
     const {
         register,
@@ -81,28 +81,29 @@ export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) 
             return;
         }
 
-        setIsLoading(true);
-
-        try {
-            await updateBook(book.book_id, updates);
-            toast({
-                title: 'Success',
-                description: 'Book updated successfully!',
-            });
-            onOpenChange(false);
-            if (onSuccess) {
-                onSuccess();
+        updateBookMutation.mutate(
+            { bookId: book.book_id, updates },
+            {
+                onSuccess: () => {
+                    toast({
+                        title: 'Success',
+                        description: 'Book updated successfully!',
+                    });
+                    onOpenChange(false);
+                    if (onSuccess) {
+                        onSuccess();
+                    }
+                },
+                onError: (error) => {
+                    console.error('Error updating book:', error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: error.message || 'Failed to update book.',
+                    });
+                }
             }
-        } catch (error) {
-            console.error('Error updating book:', error);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: error.message || 'Failed to update book.',
-            });
-        } finally {
-            setIsLoading(false);
-        }
+        );
     };
 
     if (!book) return null;
@@ -124,7 +125,7 @@ export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) 
                             id="edit-title"
                             {...register('title')}
                             placeholder="Book title"
-                            disabled={isLoading}
+                            disabled={updateBookMutation.isPending}
                             maxLength={255}
                         />
                         <div className="flex justify-between">
@@ -146,7 +147,7 @@ export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) 
                             id="edit-author"
                             {...register('author')}
                             placeholder="Book author"
-                            disabled={isLoading}
+                            disabled={updateBookMutation.isPending}
                             maxLength={255}
                         />
                         <div className="flex justify-between">
@@ -169,7 +170,7 @@ export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) 
                             {...register('description')}
                             placeholder="Book description"
                             rows={4}
-                            disabled={isLoading}
+                            disabled={updateBookMutation.isPending}
                             maxLength={2000}
                         />
                         <div className="flex justify-between">
@@ -190,13 +191,13 @@ export default function EditBookDialog({ book, open, onOpenChange, onSuccess }) 
                             type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
-                            disabled={isLoading}
+                            disabled={updateBookMutation.isPending}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isLoading ? 'Saving...' : 'Save Changes'}
+                        <Button type="submit" disabled={updateBookMutation.isPending}>
+                            {updateBookMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {updateBookMutation.isPending ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { createActivity, updateActivity } from '@/lib/api/schedule';
+import { useCreateActivity, useUpdateActivity } from '@/lib/hooks/use-schedule';
 
 const formSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -33,8 +33,12 @@ const formSchema = z.object({
 });
 
 export default function ActivityForm({ open, onOpenChange, activity, onSuccess }) {
-    const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+
+    const createActivityMutation = useCreateActivity();
+    const updateActivityMutation = useUpdateActivity();
+
+    const isLoading = createActivityMutation.isPending || updateActivityMutation.isPending;
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -62,25 +66,28 @@ export default function ActivityForm({ open, onOpenChange, activity, onSuccess }
     }, [activity, open, form]);
 
     const onSubmit = async (values) => {
-        try {
-            setLoading(true);
-            if (activity) {
-                await updateActivity(activity.activity_id, values);
-                toast({ title: "Success", description: "Activity updated successfully" });
-            } else {
-                await createActivity(values);
-                toast({ title: "Success", description: "Activity created successfully" });
+        const mutationOptions = {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: activity ? "Activity updated successfully" : "Activity created successfully"
+                });
+                onSuccess();
+            },
+            onError: (error) => {
+                console.error('Submit error:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: error.response?.data?.message || "Failed to save activity",
+                });
             }
-            onSuccess();
-        } catch (error) {
-            console.error('Submit error:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.response?.data?.message || "Failed to save activity",
-            });
-        } finally {
-            setLoading(false);
+        };
+
+        if (activity) {
+            updateActivityMutation.mutate({ id: activity.activity_id, data: values }, mutationOptions);
+        } else {
+            createActivityMutation.mutate(values, mutationOptions);
         }
     };
 
@@ -139,8 +146,8 @@ export default function ActivityForm({ open, onOpenChange, activity, onSuccess }
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-teal-600 hover:bg-teal-700">
-                                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            <Button type="submit" disabled={isLoading} className="bg-teal-600 hover:bg-teal-700">
+                                {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 Save Activity
                             </Button>
                         </DialogFooter>

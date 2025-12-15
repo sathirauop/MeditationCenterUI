@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Edit, Trash2, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,46 +23,18 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import OverrideForm from './OverrideForm';
-import { getOverrides, deleteOverride } from '@/lib/api/schedule';
+import { useOverrides, useDeleteOverride } from '@/lib/hooks/use-schedule';
 
 export default function OverrideList() {
-    const [overrides, setOverrides] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedOverride, setSelectedOverride] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const { toast } = useToast();
 
-    const fetchOverrides = async () => {
-        try {
-            setLoading(true);
-            const data = await getOverrides();
-            setOverrides(data.data || []);
-        } catch (error) {
-            console.error('Failed to fetch overrides:', error);
-            // Mock data
-            setOverrides([
-                {
-                    override_id: 1,
-                    override_date: '2025-12-25',
-                    activity_count: 4,
-                    created_at: '2025-12-01T10:00:00'
-                },
-                {
-                    override_id: 2,
-                    override_date: '2026-01-01',
-                    activity_count: 6,
-                    created_at: '2025-12-02T11:30:00'
-                }
-            ]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data, isLoading, refetch } = useOverrides();
+    const overrides = data?.data || [];
 
-    useEffect(() => {
-        fetchOverrides();
-    }, []);
+    const deleteOverrideMutation = useDeleteOverride();
 
     const handleCreate = () => {
         setSelectedOverride(null);
@@ -76,30 +48,31 @@ export default function OverrideList() {
 
     const handleDelete = async () => {
         if (!deleteId) return;
-        try {
-            await deleteOverride(deleteId);
-            toast({
-                title: "Success",
-                description: "Override deleted successfully",
-            });
-            fetchOverrides();
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to delete override",
-            });
-        } finally {
-            setDeleteId(null);
-        }
+        deleteOverrideMutation.mutate(deleteId, {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Override deleted successfully",
+                });
+                setDeleteId(null);
+            },
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to delete override",
+                });
+                setDeleteId(null);
+            }
+        });
     };
 
     const handleFormSuccess = () => {
         setIsFormOpen(false);
-        fetchOverrides();
+        refetch();
     };
 
-    if (loading) {
+    if (isLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
     }
 

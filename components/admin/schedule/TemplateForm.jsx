@@ -31,7 +31,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { createTemplate, updateTemplate, getTemplate, getActivities } from '@/lib/api/schedule';
+import { getTemplate } from '@/lib/api/schedule';
+import { useActivities, useCreateTemplate, useUpdateTemplate } from '@/lib/hooks/use-schedule';
 
 const activitySchema = z.object({
     activity_id: z.string().min(1, "Activity is required"),
@@ -52,9 +53,16 @@ const formSchema = z.object({
 });
 
 export default function TemplateForm({ open, onOpenChange, template, onSuccess }) {
-    const [loading, setLoading] = useState(false);
-    const [activitiesList, setActivitiesList] = useState([]);
+    const [loadingDetails, setLoadingDetails] = useState(false);
     const { toast } = useToast();
+
+    const { data: activitiesData } = useActivities();
+    const activitiesList = activitiesData?.data || [];
+
+    const createTemplateMutation = useCreateTemplate();
+    const updateTemplateMutation = useUpdateTemplate();
+
+    const isSubmitting = createTemplateMutation.isPending || updateTemplateMutation.isPending;
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -71,32 +79,10 @@ export default function TemplateForm({ open, onOpenChange, template, onSuccess }
     });
 
     useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const data = await getActivities();
-                setActivitiesList(data.data || []);
-            } catch (error) {
-                console.error('Failed to fetch activities:', error);
-                // Mock data
-                setActivitiesList([
-                    { activity_id: 1, title: 'Morning Meditation' },
-                    { activity_id: 2, title: 'Breakfast' },
-                    { activity_id: 3, title: 'Dharma Talk' },
-                    { activity_id: 4, title: 'Evening Chant' },
-                ]);
-            }
-        };
-
-        if (open) {
-            fetchActivities();
-        }
-    }, [open]);
-
-    useEffect(() => {
         if (template && open) {
             const loadTemplateDetails = async () => {
                 try {
-                    setLoading(true);
+                    setLoadingDetails(true);
                     // If template has activities loaded, use them, otherwise fetch
                     let templateData = template;
                     if (!template.activities) {
@@ -121,7 +107,7 @@ export default function TemplateForm({ open, onOpenChange, template, onSuccess }
                         description: "Failed to load template details",
                     });
                 } finally {
-                    setLoading(false);
+                    setLoadingDetails(false);
                 }
             };
             loadTemplateDetails();
@@ -135,38 +121,37 @@ export default function TemplateForm({ open, onOpenChange, template, onSuccess }
     }, [template, open, form, toast]);
 
     const onSubmit = async (values) => {
-        try {
-            setLoading(true);
-            // Convert activity_id back to number
-            // Convert activity_id back to number and use camelCase for API
-            const payload = {
-                name: values.name,
-                description: values.description,
-                activities: values.activities.map(a => ({
-                    activityId: parseInt(a.activity_id),
-                    startTime: a.start_time,
-                    endTime: a.end_time,
-                    notes: a.notes
-                }))
-            };
+        // Convert activity_id back to number and use camelCase for API
+        const payload = {
+            name: values.name,
+            description: values.description,
+            activities: values.activities.map(a => ({
+                activityId: parseInt(a.activity_id),
+                startTime: a.start_time,
+                endTime: a.end_time,
+                notes: a.notes
+            }))
+        };
 
-            if (template) {
-                await updateTemplate(template.template_id, payload);
-                toast({ title: "Success", description: "Template updated successfully" });
-            } else {
-                await createTemplate(payload);
-                toast({ title: "Success", description: "Template created successfully" });
+        const mutationOptions = {
+            onSuccess: () => {
+                toast({ title: "Success", description: template ? "Template updated successfully" : "Template created successfully" });
+                onSuccess();
+            },
+            onError: (error) => {
+                console.error('Submit error:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: error.response?.data?.message || "Failed to save template",
+                });
             }
-            onSuccess();
-        } catch (error) {
-            console.error('Submit error:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.response?.data?.message || "Failed to save template",
-            });
-        } finally {
-            setLoading(false);
+        };
+
+        if (template) {
+            updateTemplateMutation.mutate({ id: template.template_id, data: payload }, mutationOptions);
+        } else {
+            createTemplateMutation.mutate(payload, mutationOptions);
         }
     };
 
@@ -322,8 +307,8 @@ export default function TemplateForm({ open, onOpenChange, template, onSuccess }
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-teal-600 hover:bg-teal-700">
-                                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            <Button type="submit" disabled={isSubmitting} className="bg-teal-600 hover:bg-teal-700">
+                                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 Save Template
                             </Button>
                         </DialogFooter>

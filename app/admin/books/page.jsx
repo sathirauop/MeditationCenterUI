@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,41 +22,21 @@ import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import BookDialog from '@/components/admin/books/BookDialog';
 import EditBookDialog from '@/components/admin/books/EditBookDialog';
-import { getAdminBooks, toggleBookStatus } from '@/lib/api/books';
+import { useAdminBooks, useToggleBookStatus } from '@/lib/hooks/use-books';
 
 const ITEMS_PER_PAGE = 10;
 
 export default function BooksManagementPage() {
     const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const [editingBook, setEditingBook] = useState(null);
-    const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [currentOffset, setCurrentOffset] = useState(0);
-    const [maxOffset, setMaxOffset] = useState(0);
-    const [togglingBookId, setTogglingBookId] = useState(null);
     const { toast } = useToast();
 
-    const fetchBooks = useCallback(async (offset = 0) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getAdminBooks(ITEMS_PER_PAGE, offset);
-            setBooks(response.data || []);
-            setCurrentOffset(response.current_offset || 0);
-            setMaxOffset(response.max_offset || 0);
-        } catch (err) {
-            console.error('Error fetching books:', err);
-            setError(err.message || 'Failed to load books');
-            setBooks([]);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const { data, isLoading, error, refetch } = useAdminBooks(ITEMS_PER_PAGE, currentOffset);
+    const books = data?.data || [];
+    const maxOffset = data?.max_offset || 0;
 
-    useEffect(() => {
-        fetchBooks(0);
-    }, [fetchBooks]);
+    const toggleBookStatusMutation = useToggleBookStatus();
 
     // Pagination
     const totalPages = Math.ceil(maxOffset / ITEMS_PER_PAGE);
@@ -64,13 +44,13 @@ export default function BooksManagementPage() {
 
     const handlePreviousPage = () => {
         if (currentOffset > 0) {
-            fetchBooks(currentOffset - 1);
+            setCurrentOffset(currentOffset - 1);
         }
     };
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
-            fetchBooks(currentOffset + 1);
+            setCurrentOffset(currentOffset + 1);
         }
     };
 
@@ -79,7 +59,7 @@ export default function BooksManagementPage() {
     };
 
     const handleUploadSuccess = () => {
-        fetchBooks(currentOffset);
+        refetch();
     };
 
     const handleEditClick = (book) => {
@@ -87,28 +67,30 @@ export default function BooksManagementPage() {
     };
 
     const handleEditSuccess = () => {
-        fetchBooks(currentOffset);
+        refetch();
     };
 
     const handleToggleStatus = async (book) => {
-        setTogglingBookId(book.book_id);
-        try {
-            await toggleBookStatus(book.book_id, book.is_active);
-            toast({
-                title: 'Success',
-                description: book.is_active ? 'Book deactivated' : 'Book activated',
-            });
-            fetchBooks(currentOffset);
-        } catch (err) {
-            console.error('Error toggling status:', err);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: err.message || 'Failed to update book status',
-            });
-        } finally {
-            setTogglingBookId(null);
-        }
+        toggleBookStatusMutation.mutate(
+            { bookId: book.book_id, currentStatus: book.is_active },
+            {
+                onSuccess: () => {
+                    toast({
+                        title: 'Success',
+                        description: book.is_active ? 'Book deactivated' : 'Book activated',
+                    });
+                    refetch();
+                },
+                onError: (err) => {
+                    console.error('Error toggling status:', err);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: err.message || 'Failed to update book status',
+                    });
+                }
+            }
+        );
     };
 
     const handleDownload = (pdfUrl) => {
@@ -146,29 +128,29 @@ export default function BooksManagementPage() {
                                 Manage your meditation books and PDFs. Toggle visibility to show/hide books from the public.
                             </CardDescription>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => fetchBooks(currentOffset)}>
+                        <Button variant="outline" size="sm" onClick={() => refetch()}>
                             <RefreshCw className="mr-2 h-4 w-4" />
                             Refresh
                         </Button>
                     </CardHeader>
                     <CardContent>
                         {/* Loading State */}
-                        {loading && (
+                        {isLoading && (
                             <div className="flex items-center justify-center py-12">
                                 <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
                             </div>
                         )}
 
                         {/* Error State */}
-                        {error && !loading && (
+                        {error && !isLoading && (
                             <Alert variant="destructive" className="mb-4">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertDescription>{error}</AlertDescription>
+                                <AlertDescription>{error.message || 'Failed to load books'}</AlertDescription>
                             </Alert>
                         )}
 
                         {/* Empty State */}
-                        {!loading && !error && books.length === 0 && (
+                        {!isLoading && !error && books.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-12 text-center">
                                 <FileText className="h-16 w-16 text-muted-foreground mb-4" />
                                 <h3 className="text-lg font-semibold mb-2">No books uploaded yet</h3>
@@ -183,7 +165,7 @@ export default function BooksManagementPage() {
                         )}
 
                         {/* Books Table */}
-                        {!loading && !error && books.length > 0 && (
+                        {!isLoading && !error && books.length > 0 && (
                             <>
                                 <div className="space-y-4">
                                     {books.map((book) => (
@@ -270,14 +252,14 @@ export default function BooksManagementPage() {
                                                                 variant={book.is_active ? 'outline' : 'default'}
                                                                 size="sm"
                                                                 onClick={() => handleToggleStatus(book)}
-                                                                disabled={togglingBookId === book.book_id}
+                                                                disabled={toggleBookStatusMutation.isPending}
                                                                 className={book.is_active
                                                                     ? 'border-amber-500 text-amber-600 hover:bg-amber-50'
                                                                     : 'bg-green-600 hover:bg-green-700'
                                                                 }
                                                                 title={book.is_active ? 'Deactivate book' : 'Activate book'}
                                                             >
-                                                                {togglingBookId === book.book_id ? (
+                                                                {toggleBookStatusMutation.isPending ? (
                                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                                 ) : book.is_active ? (
                                                                     <>

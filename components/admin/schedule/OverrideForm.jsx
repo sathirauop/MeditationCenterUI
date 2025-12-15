@@ -31,13 +31,13 @@ import {
 } from '@/components/ui/select';
 
 import { useToast } from '@/components/ui/use-toast';
+import { getOverride } from '@/lib/api/schedule';
 import {
-    createOverride,
-    updateOverride,
-    getOverride,
-    getActivities,
-    getActiveTemplate
-} from '@/lib/api/schedule';
+    useActivities,
+    useActiveTemplate,
+    useCreateOverride,
+    useUpdateOverride
+} from '@/lib/hooks/use-schedule';
 
 const activitySchema = z.object({
     activity_id: z.string().min(1, "Activity is required"),
@@ -58,9 +58,18 @@ const formSchema = z.object({
 });
 
 export default function OverrideForm({ open, onOpenChange, override, onSuccess }) {
-    const [loading, setLoading] = useState(false);
-    const [activitiesList, setActivitiesList] = useState([]);
+    const [loadingDetails, setLoadingDetails] = useState(false);
     const { toast } = useToast();
+
+    const { data: activitiesData } = useActivities();
+    const activitiesList = activitiesData?.data || [];
+
+    const { data: activeTemplateData } = useActiveTemplate();
+
+    const createOverrideMutation = useCreateOverride();
+    const updateOverrideMutation = useUpdateOverride();
+
+    const isSubmitting = createOverrideMutation.isPending || updateOverrideMutation.isPending;
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -76,32 +85,10 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
     });
 
     useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const data = await getActivities();
-                setActivitiesList(data.data || []);
-            } catch (error) {
-                console.error('Failed to fetch activities:', error);
-                // Mock data
-                setActivitiesList([
-                    { activity_id: 1, title: 'Morning Meditation' },
-                    { activity_id: 2, title: 'Breakfast' },
-                    { activity_id: 3, title: 'Dharma Talk' },
-                    { activity_id: 4, title: 'Evening Chant' },
-                ]);
-            }
-        };
-
-        if (open) {
-            fetchActivities();
-        }
-    }, [open]);
-
-    useEffect(() => {
         if (override && open) {
             const loadOverrideDetails = async () => {
                 try {
-                    setLoading(true);
+                    setLoadingDetails(true);
                     // If override has activities loaded, use them, otherwise fetch
                     let overrideData = override;
                     if (!override.activities) {
@@ -126,7 +113,7 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
                         description: "Failed to load override details",
                     });
                 } finally {
-                    setLoading(false);
+                    setLoadingDetails(false);
                 }
             };
             loadOverrideDetails();
@@ -138,7 +125,7 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
         }
     }, [override, open, form, toast]);
 
-    const handleCopyFromTemplate = async () => {
+    const handleCopyFromTemplate = () => {
         const date = form.getValues('override_date');
         if (!date) {
             toast({
@@ -149,46 +136,46 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
             return;
         }
 
-        try {
-            setLoading(true);
-            const templateData = await getActiveTemplate();
+        if (activeTemplateData && activeTemplateData.activities) {
+            // Populate form with template activities
+            const newActivities = activeTemplateData.activities.map(a => ({
+                activity_id: a.activity_id.toString(),
+                start_time: a.start_time,
+                end_time: a.end_time,
+                notes: a.notes || '',
+                is_cancelled: false
+            }));
 
-            if (templateData && templateData.activities) {
-                // Populate form with template activities
-                const newActivities = templateData.activities.map(a => ({
-                    activity_id: a.activity_id.toString(),
-                    start_time: a.start_time,
-                    end_time: a.end_time,
-                    notes: a.notes || '',
-                    is_cancelled: false
-                }));
+            // Clear existing activities and append new ones
+            form.setValue('activities', newActivities);
 
-                // Clear existing activities and append new ones
-                form.setValue('activities', newActivities);
-
-                toast({ title: "Success", description: "Activities copied from active template" });
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Info",
-                    description: "No active template or activities found",
-                });
-            }
-        } catch (error) {
-            console.error('Copy template error:', error);
+            toast({ title: "Success", description: "Activities copied from active template" });
+        } else {
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: "Failed to copy from template",
+                title: "Info",
+                description: "No active template or activities found",
             });
-        } finally {
-            setLoading(false);
         }
     };
 
     const onSubmit = async (values) => {
-        try {
-            setLoading(true);
+        const mutationOptions = {
+            onSuccess: () => {
+                toast({ title: "Success", description: override ? "Override updated successfully" : "Override created successfully" });
+                onSuccess();
+            },
+            onError: (error) => {
+                console.error('Submit error:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: error.response?.data?.message || "Failed to save override",
+                });
+            }
+        };
+
+        if (override) {
             const payload = {
                 ...values,
                 activities: values.activities.map(a => ({
@@ -196,35 +183,20 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
                     activity_id: parseInt(a.activity_id)
                 }))
             };
-
-            if (override) {
-                await updateOverride(override.override_id, payload);
-                toast({ title: "Success", description: "Override updated successfully" });
-            } else {
-                // Use camelCase keys for creation payload as per docs
-                const createPayload = {
-                    overrideDate: payload.override_date,
-                    activities: payload.activities.map(a => ({
-                        activityId: a.activity_id,
-                        startTime: a.start_time,
-                        endTime: a.end_time,
-                        notes: a.notes,
-                        isCancelled: a.is_cancelled
-                    }))
-                };
-                await createOverride(createPayload);
-                toast({ title: "Success", description: "Override created successfully" });
-            }
-            onSuccess();
-        } catch (error) {
-            console.error('Submit error:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.response?.data?.message || "Failed to save override",
-            });
-        } finally {
-            setLoading(false);
+            updateOverrideMutation.mutate({ id: override.override_id, data: payload }, mutationOptions);
+        } else {
+            // Use camelCase keys for creation payload as per docs
+            const createPayload = {
+                overrideDate: values.override_date,
+                activities: values.activities.map(a => ({
+                    activityId: parseInt(a.activity_id),
+                    startTime: a.start_time,
+                    endTime: a.end_time,
+                    notes: a.notes,
+                    isCancelled: a.is_cancelled
+                }))
+            };
+            createOverrideMutation.mutate(createPayload, mutationOptions);
         }
     };
 
@@ -397,8 +369,8 @@ export default function OverrideForm({ open, onOpenChange, override, onSuccess }
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-teal-600 hover:bg-teal-700">
-                                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            <Button type="submit" disabled={isSubmitting} className="bg-teal-600 hover:bg-teal-700">
+                                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 Save Override
                             </Button>
                         </DialogFooter>

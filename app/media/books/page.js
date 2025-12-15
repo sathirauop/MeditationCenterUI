@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BookCard from '@/components/books/BookCard';
 import { Button } from '@/components/ui/button';
-import { getPublicBooks } from '@/lib/api/books';
+import { usePublicBooks } from '@/lib/hooks/use-books';
 import {
     Loader2,
     BookOpen,
@@ -18,59 +18,44 @@ import {
 const ITEMS_PER_PAGE = 12;
 
 export default function BooksPage() {
-    const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [currentOffset, setCurrentOffset] = useState(0);
-    const [maxOffset, setMaxOffset] = useState(0);
     const [urlsFetchedAt, setUrlsFetchedAt] = useState(null);
 
-    const fetchBooks = useCallback(async (offset = 0) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getPublicBooks(ITEMS_PER_PAGE, offset);
-            setBooks(response.data || []);
-            setCurrentOffset(response.current_offset || 0);
-            setMaxOffset(response.max_offset || 0);
-            setUrlsFetchedAt(new Date());
-        } catch (err) {
-            console.error('Error fetching books:', err);
-            setError(err.message || 'Failed to load books');
-            setBooks([]);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const { data, isLoading, error, refetch } = usePublicBooks(ITEMS_PER_PAGE, currentOffset);
 
-    useEffect(() => {
-        fetchBooks(0);
-    }, [fetchBooks]);
+    const books = data?.data || [];
+    const maxOffset = data?.max_offset || 0;
+
+    // Update urlsFetchedAt when data changes
+    if (data && (!urlsFetchedAt || data !== urlsFetchedAt.data)) {
+        setUrlsFetchedAt({ data, time: new Date() });
+    }
 
     // Calculate pagination
     const totalPages = Math.ceil(maxOffset / ITEMS_PER_PAGE);
     const currentPage = currentOffset + 1;
 
     // Check if URLs might be expired (10+ minutes since fetch)
-    const minutesSinceFetch = urlsFetchedAt
-        ? Math.floor((Date.now() - urlsFetchedAt.getTime()) / 1000 / 60)
+    const minutesSinceFetch = urlsFetchedAt?.time
+        ? Math.floor((Date.now() - urlsFetchedAt.time.getTime()) / 1000 / 60)
         : 0;
     const showExpiryWarning = minutesSinceFetch >= 10;
 
     const handlePreviousPage = () => {
         if (currentOffset > 0) {
-            fetchBooks(currentOffset - 1);
+            setCurrentOffset(currentOffset - 1);
         }
     };
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
-            fetchBooks(currentOffset + 1);
+            setCurrentOffset(currentOffset + 1);
         }
     };
 
     const handleRefresh = () => {
-        fetchBooks(currentOffset);
+        refetch();
+        setUrlsFetchedAt({ data, time: new Date() });
     };
 
     return (
@@ -107,24 +92,24 @@ export default function BooksPage() {
                     )}
 
                     {/* Loading State */}
-                    {loading && (
+                    {isLoading && (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 className="h-10 w-10 animate-spin text-primary" />
                         </div>
                     )}
 
                     {/* Error State */}
-                    {error && !loading && (
+                    {error && !isLoading && (
                         <div className="text-center py-20">
-                            <p className="text-red-600 mb-4">{error}</p>
-                            <Button onClick={() => fetchBooks(0)} variant="outline">
+                            <p className="text-red-600 mb-4">{error.message || 'Failed to load books'}</p>
+                            <Button onClick={() => refetch()} variant="outline">
                                 Try Again
                             </Button>
                         </div>
                     )}
 
                     {/* Empty State */}
-                    {!loading && !error && books.length === 0 && (
+                    {!isLoading && !error && books.length === 0 && (
                         <div className="text-center py-20">
                             <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-xl font-semibold text-gray-700 mb-2">
@@ -137,7 +122,7 @@ export default function BooksPage() {
                     )}
 
                     {/* Books Grid - Adjusted for horizontal cards */}
-                    {!loading && !error && books.length > 0 && (
+                    {!isLoading && !error && books.length > 0 && (
                         <>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                                 {books.map((book) => (

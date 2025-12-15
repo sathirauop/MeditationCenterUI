@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,36 +23,18 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import ActivityForm from './ActivityForm';
-import { getActivities, deleteActivity } from '@/lib/api/schedule';
+import { useActivities, useDeleteActivity } from '@/lib/hooks/use-schedule';
 
 export default function ActivityList() {
-    const [activities, setActivities] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const { toast } = useToast();
 
-    const fetchActivities = useCallback(async () => {
-        try {
-            setLoading(true);
-            const data = await getActivities();
-            setActivities(data.data || []);
-        } catch (error) {
-            console.error('Failed to fetch activities:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to fetch activities",
-            });
-        } finally {
-            setLoading(false);
-        }
-    }, [toast]);
+    const { data, isLoading, refetch } = useActivities();
+    const activities = data?.data || [];
 
-    useEffect(() => {
-        fetchActivities();
-    }, [fetchActivities]);
+    const deleteActivityMutation = useDeleteActivity();
 
     const handleCreate = () => {
         setSelectedActivity(null);
@@ -66,32 +48,34 @@ export default function ActivityList() {
 
     const handleDelete = async () => {
         if (!deleteId) return;
-        try {
-            await deleteActivity(deleteId);
-            toast({
-                title: "Success",
-                description: "Activity deleted successfully",
-            });
-            fetchActivities();
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to delete activity",
-            });
-        } finally {
-            setDeleteId(null);
-        }
+        deleteActivityMutation.mutate(deleteId, {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Activity deleted successfully",
+                });
+                setDeleteId(null);
+            },
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to delete activity",
+                });
+                setDeleteId(null);
+            }
+        });
     };
 
     const handleFormSuccess = () => {
         setIsFormOpen(false);
-        fetchActivities();
+        refetch();
     };
 
-    if (loading) {
+    if (isLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
     }
+
 
     return (
         <div className="space-y-4">
