@@ -21,7 +21,7 @@ import {
     useSchedulePreview,
     useUpdateOverride,
     useCreateOverride,
-    useDeleteOverride
+    useDeleteOverrideByDate
 } from '@/lib/hooks/use-schedule';
 import { formatDateToISO } from '@/lib/utils/date-utils';
 
@@ -54,16 +54,25 @@ export default function DateScheduleEditor({ date, onBack }) {
 
     const updateOverrideMutation = useUpdateOverride();
     const createOverrideMutation = useCreateOverride();
-    const deleteOverrideMutation = useDeleteOverride();
+    const deleteOverrideMutation = useDeleteOverrideByDate();
 
     const availableActivities = activitiesData?.data || [];
 
     // Initialize state from preview data
     useEffect(() => {
         if (previewData) {
-            if (previewData.is_override && previewData.override_id) {
+            // Check if this is an override schedule based on schedule_type
+            const isOverride = previewData.schedule_type === 'OVERRIDE';
+
+            if (isOverride) {
                 // Date has an override
-                setOverrideId(previewData.override_id);
+                // Extract override_id from the first activity's override_activity_id if available
+                const firstActivity = previewData.activities?.[0];
+                const extractedOverrideId = firstActivity?.override_activity_id
+                    ? parseInt(firstActivity.override_activity_id)
+                    : null;
+
+                setOverrideId(extractedOverrideId);
                 setIsFromTemplate(false);
                 setActivities((previewData.activities || []).map((a, idx) => ({
                     id: a.override_activity_id || `existing-${idx}`,
@@ -156,10 +165,9 @@ export default function DateScheduleEditor({ date, onBack }) {
     };
 
     const handleRevert = async () => {
-        if (!overrideId) return;
-
+        // No need to check overrideId since we're deleting by date
         setSaving(true);
-        deleteOverrideMutation.mutate(overrideId, {
+        deleteOverrideMutation.mutate(dateStr, {
             onSuccess: () => {
                 setSaving(false);
                 toast({ title: "Success", description: "Schedule reverted to default template" });
