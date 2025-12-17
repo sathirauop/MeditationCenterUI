@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -23,8 +25,12 @@ export default function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Check if we are on the home page
-  const isHome = pathname === '/';
+  // Translation hooks - use Navigation and Common namespaces
+  const nav = useTranslations('Navigation');
+  const common = useTranslations('Common');
+
+  // Check if we are on the home page (with locale prefix)
+  const isHome = pathname === '/' || pathname === '/en' || pathname === '/si';
 
   // Determine if header should be opaque (scrolled OR not on home page)
   const isOpaque = isScrolled || !isHome;
@@ -98,58 +104,59 @@ export default function Header() {
             <li>
               <Link href="/" className={`transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
-                Home
+                {nav('home')}
               </Link>
             </li>
             <li className="relative group">
               <Link href="/programs" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
-                Programs & Events
+                {nav('programs')}
               </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link href="/programs/meditation" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Meditation Programs</Link>
-                <Link href="/events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Other Events</Link>
+                <Link href="/programs/meditation" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('meditationPrograms')}</Link>
+                <Link href="/events" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('otherEvents')}</Link>
               </div>
             </li>
             <li className="relative group">
               <Link href="/media" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
-                Media
+                {nav('media')}
               </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link href="/media/books" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Books</Link>
-                <Link href="/media/recordings" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Recordings</Link>
-                <Link href="/media/blogs" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Blogs</Link>
+                <Link href="/media/books" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('books')}</Link>
+                <Link href="/media/recordings" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('recordings')}</Link>
+                <Link href="/media/blogs" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('blogs')}</Link>
               </div>
             </li>
             <li className="relative group">
               <Link href="/about" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
-                About
+                {nav('about')}
               </Link>
               {/* Dropdown */}
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link href="/about" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">About Us</Link>
-                <Link href="/gallery" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Gallery</Link>
-                <Link href="/testimonials" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Testimonials</Link>
+                <Link href="/about" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('aboutUs')}</Link>
+                <Link href="/gallery" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('gallery')}</Link>
+                <Link href="/testimonials" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('testimonials')}</Link>
               </div>
             </li>
             <li className="relative group">
               <Link href="/contact" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
-                Contact Us
+                {nav('contact')}
               </Link>
               <div className="absolute top-full left-0 mt-2 bg-white shadow-lg border rounded-lg py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link href="/contact" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">Contact Us</Link>
-                <Link href="/#faq" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">FAQ</Link>
+                <Link href="/contact" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('contact')}</Link>
+                <Link href="/#faq" className="block px-4 py-2 hover:bg-muted text-sm text-foreground">{nav('faq')}</Link>
               </div>
             </li>
           </ul>
 
-          {/* Auth Section - Conditional Rendering */}
-          <div className="flex items-center gap-3">
+          {/* Language Switcher & Auth Section */}
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             {isAuthenticated && user ? (
               // Logged in: Show user dropdown menu
               <DropdownMenu>
@@ -170,26 +177,26 @@ export default function Header() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>{common('myAccount')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <span>{common('profile')}</span>
                     </Link>
                   </DropdownMenuItem>
                   {user?.role === 'ADMIN' && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin" className="cursor-pointer flex items-center">
                         <Shield className="mr-2 h-4 w-4" />
-                        <span>Admin Dashboard</span>
+                        <span>{common('adminDashboard')}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="cursor-pointer flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                      <span>{common('settings')}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -201,7 +208,7 @@ export default function Header() {
                     className="cursor-pointer text-red-600 focus:text-red-600"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
+                    <span>{common('logout')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -213,12 +220,12 @@ export default function Header() {
                     variant="ghost"
                     className={isOpaque ? '' : 'text-white hover:text-white/80 hover:bg-white/10'}
                   >
-                    Login
+                    {common('login')}
                   </Button>
                 </Link>
                 <Link href="/register">
                   <Button className={isOpaque ? '' : 'bg-white text-primary hover:bg-white/90'}>
-                    SignUp
+                    {common('signUp')}
                   </Button>
                 </Link>
               </>

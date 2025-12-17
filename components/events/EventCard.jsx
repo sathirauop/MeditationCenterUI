@@ -1,17 +1,22 @@
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDate, formatTimeRange } from '@/lib/utils/date-utils';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 
 /**
  * EventCard Component
- * Displays event information in a card format
+ * Displays event information in a card format with locale-aware content
  *
  * @param {Object} event - Event data object
  * @param {number} event.event_id - Event ID
- * @param {string} event.name - Event name
- * @param {string} event.description - Event description
+ * @param {string} event.name - Event name (English)
+ * @param {string} event.name_si - Event name (Sinhala)
+ * @param {string} event.description - Event description (English)
+ * @param {string} event.description_si - Event description (Sinhala)
  * @param {string} event.event_date - Event date (YYYY-MM-DD)
  * @param {string} event.start_time - Start time (HH:MM:SS)
  * @param {string} event.end_time - End time (HH:MM:SS)
@@ -20,10 +25,15 @@ import Link from 'next/link';
  * @param {Array|null} event.gallery_image_urls - Array of gallery image presigned URLs
  */
 export default function EventCard({ event }) {
+  const locale = useLocale();
+  const t = useTranslations('Common');
+
   const {
     event_id,
     name,
+    name_si,
     description,
+    description_si,
     event_date,
     start_time,
     end_time,
@@ -32,10 +42,14 @@ export default function EventCard({ event }) {
     gallery_image_urls
   } = event;
 
+  // Select locale-appropriate content with fallback to English
+  const displayName = locale === 'si' && name_si ? name_si : name;
+  const displayDescription = locale === 'si' && description_si ? description_si : description;
+
   // Truncate description to 150 characters
-  const truncatedDescription = description && description.length > 150
-    ? `${description.substring(0, 150)}...`
-    : description;
+  const truncatedDescription = displayDescription && displayDescription.length > 150
+    ? `${displayDescription.substring(0, 150)}...`
+    : displayDescription;
 
   // Use cover image or first gallery image as fallback
   const eventImage = cover_image_url || (gallery_image_urls && gallery_image_urls.length > 0 ? gallery_image_urls[0] : null);
@@ -48,13 +62,13 @@ export default function EventCard({ event }) {
           {eventImage ? (
             <Image
               src={eventImage}
-              alt={name}
+              alt={displayName}
               fill
               className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted">
-              <span className="text-muted-foreground">No image available</span>
+              <span className="text-muted-foreground">{t('noImageAvailable')}</span>
             </div>
           )}
         </div>
@@ -62,10 +76,10 @@ export default function EventCard({ event }) {
         {/* Content */}
         <CardContent className="p-6 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-xl font-semibold mb-3 line-clamp-2">{name}</h3>
+          <h3 className="text-xl font-semibold mb-3 line-clamp-2">{displayName}</h3>
 
           {/* Description */}
-          {description && (
+          {displayDescription && (
             <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
               {truncatedDescription}
             </p>
@@ -79,7 +93,7 @@ export default function EventCard({ event }) {
             variant="link"
             className="text-primary hover:text-primary/80 p-0 h-auto justify-start font-medium"
           >
-            Learn More
+            {t('learnMore')}
             <span className="ml-1 text-primary">›</span>
           </Button>
         </CardContent>

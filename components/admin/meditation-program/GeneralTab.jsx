@@ -18,7 +18,9 @@ export default function GeneralTab() {
 
     const [formData, setFormData] = useState({
         name: '',
+        name_si: '',
         description: '',
+        description_si: '',
         maxSeats: 50,
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -36,7 +38,9 @@ export default function GeneralTab() {
         if (program) {
             setFormData({
                 name: program.name || '',
+                name_si: program.name_si || '',
                 description: program.description || '',
+                description_si: program.description_si || '',
                 maxSeats: program.max_seats || 50,
             });
         }
@@ -123,7 +127,9 @@ export default function GeneralTab() {
             await createProgram.mutateAsync({
                 programData: {
                     name: formData.name,
+                    name_si: formData.name_si || null,
                     description: formData.description,
+                    description_si: formData.description_si || null,
                     maxSeats: formData.maxSeats,
                     isActive: true
                 },
@@ -149,7 +155,9 @@ export default function GeneralTab() {
         setIsCreating(true);
         setFormData({
             name: '',
+            name_si: '',
             description: '',
+            description_si: '',
             maxSeats: 50,
         });
         setCoverImageFile(null);
@@ -252,9 +260,9 @@ export default function GeneralTab() {
                     <CardTitle className="text-lg">Basic Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {/* Program Name */}
+                    {/* Program Name (English) */}
                     <div className="space-y-2">
-                        <Label htmlFor="name">Program Name</Label>
+                        <Label htmlFor="name">Program Name (English)</Label>
                         <Input
                             id="name"
                             name="name"
@@ -265,9 +273,22 @@ export default function GeneralTab() {
                         />
                     </div>
 
-                    {/* Description */}
+                    {/* Program Name (Sinhala) */}
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="name_si">Program Name (Sinhala) <span className="text-muted-foreground text-xs">— සිංහල</span></Label>
+                        <Input
+                            id="name_si"
+                            name="name_si"
+                            value={formData.name_si}
+                            onChange={handleInputChange}
+                            placeholder="උදා: විපස්සනා භාවනා වීසියාව"
+                            className="max-w-xl font-sinhala"
+                        />
+                    </div>
+
+                    {/* Description (English) */}
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description (English)</Label>
                         <Textarea
                             id="description"
                             name="description"
@@ -276,6 +297,20 @@ export default function GeneralTab() {
                             placeholder="Describe your meditation program..."
                             rows={4}
                             className="max-w-xl"
+                        />
+                    </div>
+
+                    {/* Description (Sinhala) */}
+                    <div className="space-y-2">
+                        <Label htmlFor="description_si">Description (Sinhala) <span className="text-muted-foreground text-xs">— සිංහල</span></Label>
+                        <Textarea
+                            id="description_si"
+                            name="description_si"
+                            value={formData.description_si}
+                            onChange={handleInputChange}
+                            placeholder="ඔබගේ භාවනා වැඩසටහන පිළිබඳ විස්තර කරන්න..."
+                            rows={4}
+                            className="max-w-xl font-sinhala"
                         />
                     </div>
 

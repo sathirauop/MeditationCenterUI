@@ -41,7 +41,9 @@ export default function EventDialog({ open, onOpenChange, eventToEdit = null }) 
         // Transform the form data to match the backend API format
         const eventData = {
             name: data.name,
+            name_si: data.name_si || null, // Sinhala name (optional)
             description: data.description,
+            description_si: data.description_si || null, // Sinhala description (optional)
             eventDate: data.eventDate,
             startTime: data.startTime,
             endTime: data.endTime,

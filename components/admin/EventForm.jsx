@@ -13,7 +13,9 @@ import { Loader2, Upload, X } from 'lucide-react';
 // Validation schema
 const eventSchema = z.object({
   name: z.string().min(3, 'Event name must be at least 3 characters'),
+  name_si: z.string().optional(), // Sinhala name (optional)
   description: z.string().min(10, 'Description must be at least 10 characters'),
+  description_si: z.string().optional(), // Sinhala description (optional)
   eventDate: z.string().min(1, 'Event date is required'),
   startTime: z.string().min(1, 'Start time is required'),
   endTime: z.string().min(1, 'End time is required'),
@@ -35,7 +37,9 @@ export default function EventForm({ onSubmit, isLoading, initialData = null }) {
 
   const defaultValues = initialData ? {
     name: initialData.name,
+    name_si: initialData.name_si || '',
     description: initialData.description,
+    description_si: initialData.description_si || '',
     eventDate: initialData.event_date,
     startTime: initialData.start_time ? initialData.start_time.substring(0, 5) : '', // Trim seconds if present
     endTime: initialData.end_time ? initialData.end_time.substring(0, 5) : '',
@@ -83,9 +87,9 @@ export default function EventForm({ onSubmit, isLoading, initialData = null }) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-      {/* Event Name */}
+      {/* Event Name (English) */}
       <div className="space-y-2">
-        <Label htmlFor="name">Event Name *</Label>
+        <Label htmlFor="name">Event Name (English) *</Label>
         <Input
           id="name"
           {...register('name')}
@@ -97,19 +101,44 @@ export default function EventForm({ onSubmit, isLoading, initialData = null }) {
         )}
       </div>
 
-      {/* Description */}
+      {/* Event Name (Sinhala) */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description *</Label>
+        <Label htmlFor="name_si">Event Name (Sinhala) <span className="text-muted-foreground text-xs">— සිංහල</span></Label>
+        <Input
+          id="name_si"
+          {...register('name_si')}
+          placeholder="උදා: පුන් පොහෝ භාවනා උත්සවය"
+          disabled={isLoading}
+          className="font-sinhala"
+        />
+      </div>
+
+      {/* Description (English) */}
+      <div className="space-y-2">
+        <Label htmlFor="description">Description (English) *</Label>
         <Textarea
           id="description"
           {...register('description')}
           placeholder="Enter a detailed description of the event..."
-          rows={5}
+          rows={4}
           disabled={isLoading}
         />
         {errors.description && (
           <p className="text-sm text-destructive">{errors.description.message}</p>
         )}
+      </div>
+
+      {/* Description (Sinhala) */}
+      <div className="space-y-2">
+        <Label htmlFor="description_si">Description (Sinhala) <span className="text-muted-foreground text-xs">— සිංහල</span></Label>
+        <Textarea
+          id="description_si"
+          {...register('description_si')}
+          placeholder="සිදුවීම පිළිබඳ විස්තරාත්මක විස්තරයක් ඇතුළත් කරන්න..."
+          rows={4}
+          disabled={isLoading}
+          className="font-sinhala"
+        />
       </div>
 
       {/* Event Date */}

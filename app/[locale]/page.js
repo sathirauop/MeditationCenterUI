@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Phone, Clock, Loader2, AlertCircle } from 'lucide-react';
@@ -12,6 +13,13 @@ import EventCard from '@/components/events/EventCard';
 import { useEvents } from '@/lib/hooks/use-events';
 
 export default function Home() {
+  // Translations
+  const t = useTranslations('Home');
+  const tContact = useTranslations('Contact');
+  const tCommon = useTranslations('Common');
+  const tEvents = useTranslations('Events');
+  const tNav = useTranslations('Navigation');
+
   // Use React Query hook for events
   const { data: eventsData, isLoading: eventsLoading, error: eventsError } = useEvents({ limit: 4, offset: 0 });
 
@@ -37,14 +45,14 @@ export default function Home() {
         </div>
         <div className="relative z-10 text-center text-white px-6">
           <h1 className="text-5xl md:text-6xl font-bold mb-8">
-            Find Your Inner Peace
+            {t('heroTitle')}
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto">
-            Join our meditation community and embark on a journey of mindfulness, wisdom, and spiritual growth in the heart of Sri Lanka.
+            {t('heroSubtitle')}
           </p>
           <Link href="/programs/meditation">
             <Button size="lg" className="bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg">
-              Begin Your Journey
+              {t('heroCta')}
             </Button>
           </Link>
         </div>
@@ -58,7 +66,7 @@ export default function Home() {
             {/* Main Heading */}
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-bold leading-tight max-w-4xl mx-auto">
-                Welcome to Isipathana International Meditation Center
+                {t('welcomeTitle')}
               </h2>
             </div>
 
@@ -67,13 +75,8 @@ export default function Home() {
               <div className="bg-muted/30 rounded-2xl p-12 shadow-sm">
                 <blockquote className="space-y-8">
                   <p className="text-xl md:text-2xl leading-relaxed text-foreground font-light">
-                    At Isipathana International Meditation Center, we offer a sanctuary for spiritual growth and inner development. Our center combines ancient Buddhist wisdom with modern meditation techniques, providing a comprehensive approach to mindfulness and enlightenment.
+                    {t('welcomeDescription')}
                   </p>
-                  {/* <footer>
-                  <cite className="text-primary text-lg font-semibold not-italic">
-                    Tripple Gem Blessings
-                  </cite>
-                </footer> */}
                 </blockquote>
 
                 <div className="mt-10">
@@ -83,7 +86,7 @@ export default function Home() {
                       size="lg"
                       className="rounded-full border-2 border-primary/20 hover:border-primary px-8 py-6 text-base"
                     >
-                      About Us
+                      {tNav('aboutUs')}
                     </Button>
                   </Link>
                 </div>
@@ -113,16 +116,16 @@ export default function Home() {
       {/* Our Meditation Program */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-8">Our Meditation Program</h2>
+          <h2 className="text-4xl font-bold mb-8">{t('programTitle')}</h2>
           <Card className="border-2">
             <CardContent className="p-8">
               <div className="flex items-center justify-between">
                 <p className="text-muted-foreground max-w-3xl">
-                  Experience transformative meditation sessions designed for all levels. Our programs combine traditional Buddhist practices with modern mindfulness techniques, guided by experienced instructors in a peaceful environment.
+                  {t('programDescription')}
                 </p>
                 <Link href="/programs/meditation">
                   <Button size="lg" className="ml-8">
-                    Join
+                    {tCommon('join')}
                   </Button>
                 </Link>
               </div>
@@ -134,13 +137,13 @@ export default function Home() {
       {/* Upcoming Events */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-12">Upcoming Events</h2>
+          <h2 className="text-4xl font-bold mb-12">{tEvents('upcomingEvents')}</h2>
 
           {/* Loading State */}
           {eventsLoading && (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <span className="ml-3 text-muted-foreground">Loading events...</span>
+              <span className="ml-3 text-muted-foreground">{tCommon('loadingEvents')}</span>
             </div>
           )}
 
@@ -148,7 +151,7 @@ export default function Home() {
           {eventsError && !eventsLoading && (
             <div className="flex flex-col items-center justify-center py-20">
               <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-              <p className="text-destructive font-medium mb-2">Failed to Load Events</p>
+              <p className="text-destructive font-medium mb-2">{t('failedToLoadEvents')}</p>
               <p className="text-sm text-muted-foreground">{eventsError?.message || 'An error occurred'}</p>
             </div>
           )}
@@ -156,8 +159,8 @@ export default function Home() {
           {/* Empty State */}
           {!eventsLoading && !eventsError && events.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20">
-              <p className="text-muted-foreground text-lg">No upcoming events at the moment.</p>
-              <p className="text-sm text-muted-foreground mt-2">Check back soon for new events!</p>
+              <p className="text-muted-foreground text-lg">{t('noEventsMessage')}</p>
+              <p className="text-sm text-muted-foreground mt-2">{t('checkBackSoon')}</p>
             </div>
           )}
 
@@ -178,7 +181,7 @@ export default function Home() {
       {/* Contact Us Section */}
       <section id="contact" className="py-20 bg-muted/30">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12">Contact Us</h2>
+          <h2 className="text-4xl font-bold text-center mb-12">{tContact('title')}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {/* Phone & WhatsApp */}
             <Card className="text-center">
@@ -186,11 +189,11 @@ export default function Home() {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Phone className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle>Phone & WhatsApp</CardTitle>
+                <CardTitle>{tContact('phoneWhatsApp')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p><a href="tel:+94771234567" className="text-primary hover:underline">+94 77 123 4567</a></p>
-                <p className="text-sm text-muted-foreground">Available 9 AM - 6 PM</p>
+                <p><a href="tel:+94771234567" className="text-primary hover:underline">{tContact('phoneNumber')}</a></p>
+                <p className="text-sm text-muted-foreground">{tContact('availability')}</p>
               </CardContent>
             </Card>
 
@@ -200,11 +203,11 @@ export default function Home() {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle>Location</CardTitle>
+                <CardTitle>{tContact('location')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p>123 Meditation Path<br />Colombo, Sri Lanka</p>
-                <p><a href="#map" className="text-primary hover:underline text-sm">View on Map</a></p>
+                <p>{tContact('address')}<br />{tContact('city')}</p>
+                <p><a href="#map" className="text-primary hover:underline text-sm">{tCommon('viewOnMap')}</a></p>
               </CardContent>
             </Card>
 
@@ -214,11 +217,11 @@ export default function Home() {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle>Operating Hours</CardTitle>
+                <CardTitle>{tContact('operatingHours')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p>Daily: 6:00 AM - 8:00 PM</p>
-                <p className="text-sm text-muted-foreground">Meditation Sessions: 6 AM & 6 PM</p>
+                <p>{tContact('dailyHours')}</p>
+                <p className="text-sm text-muted-foreground">{tContact('sessionTimes')}</p>
               </CardContent>
             </Card>
           </div>
@@ -230,3 +233,4 @@ export default function Home() {
     </div>
   );
 }
+
