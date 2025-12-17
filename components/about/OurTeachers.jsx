@@ -1,25 +1,30 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 /**
  * OurTeachers Component
  * Displays the meditation center's teachers in a grid
  */
 export default function OurTeachers() {
+    const t = useTranslations('About');
+
     const teachers = [
         {
             name: 'Anagarika Sharma',
-            role: 'Resident Teacher',
+            roleKey: 'residentTeacher',
             image: '/images/temple1.jpg',
         },
         {
             name: 'Kenji Tanaka',
-            role: 'Visiting Instructor',
+            roleKey: 'visitingInstructor',
             image: '/images/temple2.webp',
         },
         {
             name: 'Elena Vasi',
-            role: 'Mindfulness Guide',
+            roleKey: 'mindfulnessGuide',
             image: '/images/meditationHall.jpeg',
         },
     ];
@@ -28,10 +33,10 @@ export default function OurTeachers() {
         <section className="py-16 sm:py-24">
             <div className="flex flex-col items-center pb-12 text-center">
                 <h2 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-                    Our Teachers
+                    {t('teachersTitle')}
                 </h2>
                 <p className="mt-4 max-w-2xl text-lg leading-relaxed text-gray-600">
-                    Our dedicated teachers bring a wealth of experience and a deep commitment to sharing the path of mindfulness and compassion.
+                    {t('teachersSubtitle')}
                 </p>
             </div>
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +55,7 @@ export default function OurTeachers() {
                                 {teacher.name}
                             </p>
                             <p className="text-sm text-blue-900">
-                                {teacher.role}
+                                {t(teacher.roleKey)}
                             </p>
                         </div>
                     </div>
@@ -59,3 +64,4 @@ export default function OurTeachers() {
         </section>
     );
 }
+

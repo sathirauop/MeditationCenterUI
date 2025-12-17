@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,8 +18,6 @@ const CONTACT_DETAILS = {
     phone: '+94 77 123 4567',
     email: 'info@isipathana.lk',
     address: {
-        line1: '123 Meditation Path',
-        line2: 'Colombo, Sri Lanka',
         mapLink: '#map' // Replace with actual Google Maps link
     },
     hours: {
@@ -28,10 +27,14 @@ const CONTACT_DETAILS = {
 };
 
 export default function ContactPage() {
+    const t = useTranslations('ContactPage');
+    const tContact = useTranslations('Contact');
+    const tCommon = useTranslations('Common');
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // TODO: Implement form submission logic
-        alert('Thank you for your message! We will get back to you soon.');
+        alert(t('thankYouMessage'));
     };
 
     return (
@@ -48,9 +51,9 @@ export default function ContactPage() {
                 }}
             >
                 <div className="container px-4 mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-bold drop-shadow-md mb-4">Contact Us</h1>
+                    <h1 className="text-4xl md:text-6xl font-bold drop-shadow-md mb-4">{t('heroTitle')}</h1>
                     <p className="text-lg md:text-xl max-w-2xl mx-auto drop-shadow-sm">
-                        We are here to answer any questions you may have about our programs, retreats, or visiting the center. Reach out to us and we&apos;ll respond as soon as we can.
+                        {t('heroSubtitle')}
                     </p>
                 </div>
             </section>
@@ -61,7 +64,7 @@ export default function ContactPage() {
 
                         {/* Contact Information */}
                         <div className="space-y-8">
-                            <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
+                            <h2 className="text-3xl font-bold mb-6">{t('getInTouch')}</h2>
 
                             <div className="grid sm:grid-cols-2 gap-6">
                                 {/* Phone */}
@@ -70,12 +73,12 @@ export default function ContactPage() {
                                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                                             <Phone className="w-6 h-6 text-primary" />
                                         </div>
-                                        <CardTitle className="text-xl">Phone</CardTitle>
+                                        <CardTitle className="text-xl">{t('phone')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-muted-foreground mb-1">Call or WhatsApp us</p>
+                                        <p className="text-muted-foreground mb-1">{t('callOrWhatsApp')}</p>
                                         <a href={`tel:${CONTACT_DETAILS.phone.replace(/\s/g, '')}`} className="text-lg font-medium hover:text-primary transition-colors">
-                                            {CONTACT_DETAILS.phone}
+                                            {tContact('phoneNumber')}
                                         </a>
                                     </CardContent>
                                 </Card>
@@ -86,12 +89,12 @@ export default function ContactPage() {
                                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                                             <Mail className="w-6 h-6 text-primary" />
                                         </div>
-                                        <CardTitle className="text-xl">Email</CardTitle>
+                                        <CardTitle className="text-xl">{t('email')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-muted-foreground mb-1">Send us a message</p>
+                                        <p className="text-muted-foreground mb-1">{t('sendUsMessage')}</p>
                                         <a href={`mailto:${CONTACT_DETAILS.email}`} className="text-lg font-medium hover:text-primary transition-colors">
-                                            {CONTACT_DETAILS.email}
+                                            {t('emailLabel')}
                                         </a>
                                     </CardContent>
                                 </Card>
@@ -102,14 +105,14 @@ export default function ContactPage() {
                                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                                             <MapPin className="w-6 h-6 text-primary" />
                                         </div>
-                                        <CardTitle className="text-xl">Location</CardTitle>
+                                        <CardTitle className="text-xl">{tContact('location')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-muted-foreground mb-1">Visit our center</p>
-                                        <p className="font-medium">{CONTACT_DETAILS.address.line1}</p>
-                                        <p className="font-medium">{CONTACT_DETAILS.address.line2}</p>
+                                        <p className="text-muted-foreground mb-1">{t('visitCenter')}</p>
+                                        <p className="font-medium">{tContact('address')}</p>
+                                        <p className="font-medium">{tContact('city')}</p>
                                         <a href={CONTACT_DETAILS.address.mapLink} className="text-primary text-sm hover:underline mt-2 inline-block">
-                                            View on Map
+                                            {tCommon('viewOnMap')}
                                         </a>
                                     </CardContent>
                                 </Card>
@@ -120,12 +123,12 @@ export default function ContactPage() {
                                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                                             <Clock className="w-6 h-6 text-primary" />
                                         </div>
-                                        <CardTitle className="text-xl">Hours</CardTitle>
+                                        <CardTitle className="text-xl">{t('hours')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-muted-foreground mb-1">Center Hours</p>
-                                        <p className="font-medium">{CONTACT_DETAILS.hours.daily}</p>
-                                        <p className="text-sm text-muted-foreground mt-1">{CONTACT_DETAILS.hours.sessions}</p>
+                                        <p className="text-muted-foreground mb-1">{t('centerHours')}</p>
+                                        <p className="font-medium">{tContact('dailyHours')}</p>
+                                        <p className="text-sm text-muted-foreground mt-1">{tContact('sessionTimes')}</p>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -133,36 +136,36 @@ export default function ContactPage() {
 
                         {/* Contact Form */}
                         <div className="bg-muted/10 p-8 rounded-2xl border border-border">
-                            <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+                            <h2 className="text-2xl font-bold mb-6">{t('formTitle')}</h2>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label htmlFor="name" className="text-sm font-medium">Name</label>
-                                        <Input id="name" placeholder="Your name" required />
+                                        <label htmlFor="name" className="text-sm font-medium">{t('nameLabel')}</label>
+                                        <Input id="name" placeholder={t('namePlaceholder')} required />
                                     </div>
                                     <div className="space-y-2">
-                                        <label htmlFor="phone" className="text-sm font-medium">Phone Number</label>
-                                        <Input id="phone" type="tel" placeholder="Your phone number" required />
+                                        <label htmlFor="phone" className="text-sm font-medium">{t('phoneLabel')}</label>
+                                        <Input id="phone" type="tel" placeholder={t('phonePlaceholder')} required />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label htmlFor="email" className="text-sm font-medium">Email</label>
-                                    <Input id="email" type="email" placeholder="Your email address" required />
+                                    <label htmlFor="email" className="text-sm font-medium">{t('emailFormLabel')}</label>
+                                    <Input id="email" type="email" placeholder={t('emailPlaceholder')} required />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label htmlFor="message" className="text-sm font-medium">Message</label>
+                                    <label htmlFor="message" className="text-sm font-medium">{t('messageLabel')}</label>
                                     <Textarea
                                         id="message"
-                                        placeholder="How can we help you?"
+                                        placeholder={t('messagePlaceholder')}
                                         className="min-h-[150px]"
                                         required
                                     />
                                 </div>
 
                                 <Button type="submit" className="w-full text-lg py-6">
-                                    Send Message
+                                    {t('sendMessage')}
                                 </Button>
                             </form>
                         </div>
@@ -175,3 +178,4 @@ export default function ContactPage() {
         </div>
     );
 }
+

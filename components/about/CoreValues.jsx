@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Heart, Brain, Lightbulb } from 'lucide-react';
 
 /**
@@ -6,28 +9,30 @@ import { Heart, Brain, Lightbulb } from 'lucide-react';
  * Displays the three core values: Metta, Sati, and Panna
  */
 export default function CoreValues() {
+    const t = useTranslations('About');
+
     const coreValues = [
         {
             icon: Heart,
-            title: 'Metta (Loving-Kindness)',
-            description: 'Cultivating an attitude of unconditional kindness and goodwill towards all beings.',
+            titleKey: 'mettaTitle',
+            descriptionKey: 'mettaDescription',
         },
         {
             icon: Brain,
-            title: 'Sati (Mindfulness)',
-            description: 'Developing present-moment awareness and a clear, non-judgmental attention.',
+            titleKey: 'satiTitle',
+            descriptionKey: 'satiDescription',
         },
         {
             icon: Lightbulb,
-            title: 'Panna (Wisdom)',
-            description: 'Gaining direct, experiential insight into the nature of reality.',
+            titleKey: 'pannaTitle',
+            descriptionKey: 'pannaDescription',
         },
     ];
 
     return (
         <section className="py-16 sm:py-24">
             <h2 className="text-3xl font-bold leading-tight tracking-tight text-gray-900 text-center mb-12">
-                Our Core Values
+                {t('valuesTitle')}
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 {coreValues.map((value, index) => {
@@ -42,10 +47,10 @@ export default function CoreValues() {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <h3 className="text-lg font-bold leading-tight text-gray-900">
-                                    {value.title}
+                                    {t(value.titleKey)}
                                 </h3>
                                 <p className="text-sm font-normal leading-normal text-gray-600">
-                                    {value.description}
+                                    {t(value.descriptionKey)}
                                 </p>
                             </div>
                         </div>
@@ -55,3 +60,4 @@ export default function CoreValues() {
         </section>
     );
 }
+
