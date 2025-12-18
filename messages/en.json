@@ -144,5 +144,24 @@
         "messagePlaceholder": "How can we help you?",
         "sendMessage": "Send Message",
         "thankYouMessage": "Thank you for your message! We will get back to you soon."
+    },
+    "Blog": {
+        "title": "Blog",
+        "subtitle": "Insights and teachings from our meditation center",
+        "searchPlaceholder": "Search articles...",
+        "filterByTags": "Filter by tags",
+        "sortBy": "Sort by",
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "mostViewed": "Most Viewed",
+        "readMore": "Read More",
+        "publishedOn": "Published on",
+        "by": "by",
+        "views": "views",
+        "noPostsFound": "No blog posts found",
+        "loadingPosts": "Loading posts...",
+        "backToBlog": "Back to Blog",
+        "postNotFound": "Post Not Found",
+        "photoGallery": "Photo Gallery"
     }
 }

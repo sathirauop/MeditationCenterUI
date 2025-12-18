@@ -144,5 +144,24 @@
         "messagePlaceholder": "අපට ඔබට උදව් කළ හැක්කේ කෙසේද?",
         "sendMessage": "පණිවිඩය යවන්න",
         "thankYouMessage": "ඔබේ පණිවිඩයට ස්තුතියි! අපි ඉක්මනින් ඔබ හා සම්බන්ධ වන්නෙමු."
+    },
+    "Blog": {
+        "title": "බ්ලොග්",
+        "subtitle": "ධ්‍යාන මධ්‍යස්ථානයෙන් තීක්ෂ්ණ බුද්ධිය සහ ඉගෙනීම්",
+        "searchPlaceholder": "ලිපි සොයන්න...",
+        "filterByTags": "ටැග් අනුව පෙරන්න",
+        "sortBy": "අනුපිළිවෙල",
+        "newest": "අලුත්ම",
+        "oldest": "පරණම",
+        "mostViewed": "වැඩිම බැලීම්",
+        "readMore": "තවත් කියවන්න",
+        "publishedOn": "ප්‍රකාශිත දිනය",
+        "by": "විසින්",
+        "views": "බැලීම්",
+        "noPostsFound": "බ්ලොග් ලිපි හමු වුණේ නැත",
+        "loadingPosts": "ලිපි පූරණය වෙමින්...",
+        "backToBlog": "බ්ලොග් එකට ආපසු",
+        "postNotFound": "ලිපිය හමු වුණේ නැත",
+        "photoGallery": "පින්තූර ගැලරිය"
     }
 }

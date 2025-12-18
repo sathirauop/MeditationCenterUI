@@ -10,6 +10,7 @@ import {
   Calendar,
   Users,
   BookOpen,
+  FileText,
   Settings,
   ExternalLink,
   Menu,
@@ -40,6 +41,12 @@ const navigationItems = [
     name: 'Books',
     href: '/admin/books',
     icon: BookOpen,
+    disabled: false
+  },
+  {
+    name: 'Blog',
+    href: '/admin/blog',
+    icon: FileText,
     disabled: false
   },
   {
