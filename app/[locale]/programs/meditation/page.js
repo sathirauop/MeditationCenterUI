@@ -54,8 +54,8 @@ export default function Page() {
                     coverImage={program?.cover_image_url}
                 />
                 <DailySchedule />
-                <ProgramGallery images={program?.gallery_image_urls} />
                 <BookingWidget maxSeats={program?.max_seats} />
+                <ProgramGallery images={program?.gallery_image_urls} />
             </main>
             <Footer />
         </div>
