@@ -53,7 +53,7 @@ const navigationItems = [
     name: 'Users',
     href: '/admin/users',
     icon: Users,
-    disabled: true
+    disabled: false
   },
   {
     name: 'Programs',
