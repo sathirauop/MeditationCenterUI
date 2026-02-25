@@ -19,12 +19,13 @@ import {
 import { Button } from '@/components/ui/button';
 
 const navigationItems = [
-  {
-    name: 'Dashboard',
-    href: '/admin',
-    icon: LayoutDashboard,
-    disabled: false
-  },
+  // Hidden temporarily as per request
+  // {
+  //   name: 'Dashboard',
+  //   href: '/admin',
+  //   icon: LayoutDashboard,
+  //   disabled: false
+  // },
   {
     name: 'Meditation Program',
     href: '/admin/meditation-program',
@@ -55,18 +56,19 @@ const navigationItems = [
     icon: Users,
     disabled: false
   },
-  {
-    name: 'Programs',
-    href: '/admin/programs',
-    icon: BookOpen,
-    disabled: true
-  },
-  {
-    name: 'Settings',
-    href: '/admin/settings',
-    icon: Settings,
-    disabled: true
-  }
+  // Hidden temporarily as per request
+  // {
+  //   name: 'Programs',
+  //   href: '/admin/programs',
+  //   icon: BookOpen,
+  //   disabled: true
+  // },
+  // {
+  //   name: 'Settings',
+  //   href: '/admin/settings',
+  //   icon: Settings,
+  //   disabled: true
+  // }
 ];
 
 export default function SideNav() {

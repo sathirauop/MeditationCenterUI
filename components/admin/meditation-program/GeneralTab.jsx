@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useActiveProgram, useUpdateProgram, useCreateProgramWithImages } from '@/lib/hooks/use-programs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +34,7 @@ export default function GeneralTab() {
     const galleryInputRef = useRef(null);
 
     // Initialize form when program data loads
-    useState(() => {
+    useEffect(() => {
         if (program) {
             setFormData({
                 name: program.name || '',

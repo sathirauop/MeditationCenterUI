@@ -108,7 +108,7 @@ export default function Header() {
               </Link>
             </li>
             <li className="relative group">
-              <Link href="/programs" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
+              <Link href="/programs/meditation" className={`cursor-pointer transition-colors ${isOpaque ? 'hover:text-primary' : 'hover:text-white/80'
                 }`}>
                 {nav('programs')}
               </Link>

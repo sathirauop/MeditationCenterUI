@@ -1,16 +1,27 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Calendar, BookOpen, UserCheck } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const router = useRouter();
 
+  useEffect(() => {
+    router.replace('/admin/meditation-program');
+  }, [router]);
+
+  return null; // Redirecting
+
+  /*
+  // Dashboard content hidden temporarily as per request
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-6 py-8">
-        {/* Page Header */}
+        {/* Page Header *\/}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
           <p className="text-muted-foreground">
@@ -18,7 +29,7 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards *\/}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -65,7 +76,7 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Quick Info */}
+        {/* Quick Info *\/}
         <Card>
           <CardHeader>
             <CardTitle>Welcome to the Admin Dashboard</CardTitle>
@@ -80,4 +91,5 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+  */
 }
