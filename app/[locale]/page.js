@@ -192,7 +192,7 @@ export default function Home() {
                 <CardTitle>{tContact('phoneWhatsApp')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p><a href="tel:+94771234567" className="text-primary hover:underline">{tContact('phoneNumber')}</a></p>
+                <p><a href="tel:+94717302179" className="text-primary hover:underline">{tContact('phoneNumber')}</a></p>
                 <p className="text-sm text-muted-foreground">{tContact('availability')}</p>
               </CardContent>
             </Card>

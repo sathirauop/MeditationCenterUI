@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,14 +16,14 @@ import Footer from '@/components/layout/Footer';
 // Update these values to change the contact details across the page
 // ----------------------------------------------------------------------
 const CONTACT_DETAILS = {
-    phone: '+94 77 123 4567',
-    email: 'info@isipathana.lk',
+    phone: '+94 71 730 2179',
+    email: 'isipathanameditationcenter@gmail.com',
     address: {
-        mapLink: '#map' // Replace with actual Google Maps link
+        mapLink: 'https://maps.google.com/?q=Isipathanaramaya+Temple+Meddawatta+Matara+Sri+Lanka'
     },
     hours: {
-        daily: '6:00 AM - 8:00 PM',
-        sessions: 'Meditation Sessions: 6 AM & 6 PM'
+        daily: 'Open for meditation & programs daily',
+        sessions: 'Programs for all age groups'
     }
 };
 
@@ -41,20 +42,32 @@ export default function ContactPage() {
         <div className="flex flex-col min-h-screen">
             <Header />
 
-            {/* Hero Section */}
-            <section
-                className="relative h-[50vh] flex items-center justify-center text-center text-white"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(0, 77, 122, 0.6), rgba(0, 77, 122, 0.4)), url('/images/temple2.webp')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            >
-                <div className="container px-4 mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-bold drop-shadow-md mb-4">{t('heroTitle')}</h1>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto drop-shadow-sm">
-                        {t('heroSubtitle')}
-                    </p>
+            {/* Hero Section - matches ProgramHero layout */}
+            <section className="relative pt-20 bg-white">
+                <div className="container mx-auto px-6 py-8">
+                    <div className="relative h-[60vh] rounded-2xl overflow-hidden">
+                        {/* Background Image */}
+                        <Image
+                            src="/images/temple2.webp"
+                            alt={t('heroTitle')}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-black/40"></div>
+
+                        {/* Content */}
+                        <div className="relative z-10 h-full flex items-center justify-center px-6 text-center text-white">
+                            <div className="max-w-3xl">
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                                    {t('heroTitle')}
+                                </h1>
+                                <p className="text-base md:text-lg text-white/90 leading-relaxed">
+                                    {t('heroSubtitle')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 

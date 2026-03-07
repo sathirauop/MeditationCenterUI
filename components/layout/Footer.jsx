@@ -18,8 +18,8 @@ export default function Footer() {
                             {t('aboutDescription')}
                         </p>
                         <div className="flex flex-col gap-2 text-sm">
-                            <p className="text-muted-foreground">📧 isipathana@gmail.com</p>
-                            <p className="text-muted-foreground">📍 Colombo, Sri Lanka</p>
+                            <p className="text-muted-foreground">📧 isipathanameditationcenter@gmail.com</p>
+                            <p className="text-muted-foreground">📍 Meddawatta, Matara 81000, Sri Lanka</p>
                         </div>
                     </div>
 
@@ -51,9 +51,9 @@ export default function Footer() {
                     <div className="space-y-4">
                         <h4 className="font-semibold text-lg">{t('contactInfo')}</h4>
                         <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                            <p>📧 info@isipathana.lk</p>
-                            <p>📱 +94 77 123 4567</p>
-                            <p>📍 Colombo, Sri Lanka</p>
+                            <p>📧 isipathanameditationcenter@gmail.com</p>
+                            <p>📱 +94 71 730 2179</p>
+                            <p>📍 Meddawatta, Matara 81000, Sri Lanka</p>
                         </div>
                     </div>
                 </div>

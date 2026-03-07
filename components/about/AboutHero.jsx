@@ -2,29 +2,37 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 
 /**
  * AboutHero Component
  * Hero section for the About page with background image and CTA
+ * Styled consistently with ProgramHero
  */
 export default function AboutHero() {
     const t = useTranslations('About');
 
     return (
-        <div className="p-4">
-            <div
-                className="flex min-h-[480px] flex-col items-center justify-center gap-6 rounded-xl bg-cover bg-center bg-no-repeat p-8 text-center sm:gap-8"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url('/images/temple2.webp')`
-                }}
-            >
-                <div className="flex flex-col gap-2">
-                    <h1 className="text-white text-4xl font-black leading-tight tracking-tight sm:text-5xl">
+        <div className="relative h-[60vh] rounded-2xl overflow-hidden">
+            {/* Background Image */}
+            <Image
+                src="/images/temple2.webp"
+                alt={t('heroTitle')}
+                fill
+                style={{ objectFit: 'cover' }}
+                priority
+            />
+            <div className="absolute inset-0 bg-black/40"></div>
+
+            {/* Content */}
+            <div className="relative z-10 h-full flex flex-col items-center justify-center gap-6 px-6 text-center text-white">
+                <div className="max-w-3xl">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
                         {t('heroTitle')}
                     </h1>
-                    <p className="max-w-xl text-base font-normal leading-normal text-gray-200 sm:text-lg">
+                    <p className="text-base md:text-lg text-white/90 leading-relaxed">
                         {t('heroSubtitle')}
                     </p>
                 </div>

@@ -18,28 +18,28 @@ const formatTime = (timeStr) => {
 
 const DUMMY_SCHEDULE = [
     {
-        start_time: '06:00',
+        start_time: '05:30',
         activity_title: 'Morning Chanting & Meditation'
     },
     {
+        start_time: '06:30',
+        activity_title: 'Walking Meditation in Temple Garden'
+    },
+    {
         start_time: '08:00',
-        activity_title: 'Breakfast & Mindful Eating'
+        activity_title: 'Dhamma Talk & Discussion'
     },
     {
-        start_time: '10:30',
-        activity_title: 'Dharma Talk & Discussion'
+        start_time: '09:30',
+        activity_title: 'Group Meditation'
     },
     {
-        start_time: '11:30',
-        activity_title: 'Walking Meditation'
+        start_time: '11:00',
+        activity_title: 'Sutta Study & Discussion'
     },
     {
-        start_time: '14:00',
-        activity_title: 'Lunch (Dana)'
-    },
-    {
-        start_time: '18:00',
-        activity_title: 'Evening Chanting & Meditation'
+        start_time: '17:00',
+        activity_title: 'Evening Chanting Practice'
     }
 ];
 
@@ -63,7 +63,7 @@ export default function DailySchedule() {
                         Daily Schedule
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        Our daily routine is carefully designed to balance meditation practice, learning, and rest. This structure helps you deepen your practice and find peace throughout the day.
+                        Our daily routine is carefully designed to balance meditation practice, Dhamma study, and mindful reflection. This structure helps participants deepen their practice and cultivate inner stillness, clarity, and compassion.
                     </p>
                 </div>
 

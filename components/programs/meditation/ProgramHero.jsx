@@ -25,7 +25,7 @@ export default function ProgramHero({ title, description, coverImage }) {
                                 {title || "Meditation Programs"}
                             </h1>
                             <p className="text-base md:text-lg text-white/90 leading-relaxed">
-                                {description || "Discover the path to inner peace and clarity through our immersive Vipassana meditation program. This program is designed to guide participants in the practice of mindfulness, helping to cultivate a deeper understanding of the mind and body. Suitable for both beginners and experienced practitioners, our retreat provides a supportive and tranquil environment for profound personal growth."}
+                                {description || "Our center offers a range of programs tailored to meet the needs of individuals, families, organizations, and visitors from around the world. From daily guided meditation and specialized classes in Buddhist Psychology to corporate wellness packages and cultural immersion experiences for foreign visitors — each program is designed to guide participants from the busyness of life into a place of stillness, clarity, and compassion."}
                             </p>
                         </div>
                     </div>

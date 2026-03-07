@@ -18,25 +18,32 @@ export default function AboutPage() {
             <Header />
 
             {/* Main Content */}
-            <main className="flex flex-col items-center pt-25 py-10 sm:py-20">
-                <div className="w-full max-w-5xl px-4">
-                    {/* Hero Section */}
-                    <AboutHero />
+            <main className="flex-1">
+                {/* Hero Section - matches ProgramHero layout */}
+                <section className="relative pt-20 bg-white">
+                    <div className="container mx-auto px-6 py-8">
+                        <AboutHero />
+                    </div>
+                </section>
 
-                    {/* Mission & Vision */}
-                    <MissionVision />
+                {/* Page Content */}
+                <div className="flex flex-col items-center py-10 sm:py-20">
+                    <div className="w-full max-w-5xl px-4">
+                        {/* Mission & Vision */}
+                        <MissionVision />
 
-                    {/* Core Values */}
-                    <CoreValues />
+                        {/* Core Values */}
+                        <CoreValues />
 
-                    {/* Our Story */}
-                    <OurStory />
+                        {/* Our Story */}
+                        <OurStory />
 
-                    {/* Our Teachers */}
-                    <OurTeachers />
+                        {/* Our Teachers */}
+                        <OurTeachers />
 
-                    {/* CTA Section */}
-                    <JourneyCTA />
+                        {/* CTA Section */}
+                        <JourneyCTA />
+                    </div>
                 </div>
             </main>
 

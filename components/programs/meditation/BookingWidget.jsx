@@ -20,7 +20,7 @@ export default function BookingWidget({ maxSeats = 50 }) {
                     <div className="text-center mb-12">
                         <h2 className="text-4xl font-bold mb-4 text-blue-900">Book Your Meditation Program</h2>
                         <p className="text-gray-600 max-w-2xl mx-auto">
-                            Join our guided meditation program. Select your preferred date and reserve your seats.
+                            Join our guided meditation program at Isipathanaramaya Temple, Matara. Select your preferred date and reserve your seats.
                         </p>
                     </div>
 

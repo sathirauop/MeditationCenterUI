@@ -13,19 +13,9 @@ export default function OurTeachers() {
 
     const teachers = [
         {
-            name: 'Anagarika Sharma',
+            name: 'Rev. Sudhamma Nahangoda Thero',
             roleKey: 'residentTeacher',
             image: '/images/temple1.jpg',
-        },
-        {
-            name: 'Kenji Tanaka',
-            roleKey: 'visitingInstructor',
-            image: '/images/temple2.webp',
-        },
-        {
-            name: 'Elena Vasi',
-            roleKey: 'mindfulnessGuide',
-            image: '/images/meditationHall.jpeg',
         },
     ];
 
