@@ -11,6 +11,7 @@ import {
   Users,
   BookOpen,
   FileText,
+  ImageIcon,
   Settings,
   ExternalLink,
   Menu,
@@ -48,6 +49,12 @@ const navigationItems = [
     name: 'Blog',
     href: '/admin/blog',
     icon: FileText,
+    disabled: false
+  },
+  {
+    name: 'Gallery',
+    href: '/admin/gallery',
+    icon: ImageIcon,
     disabled: false
   },
   {
