@@ -29,6 +29,7 @@ export default function GeneralTab() {
     const [coverImagePreview, setCoverImagePreview] = useState(null);
     const [galleryFiles, setGalleryFiles] = useState([]);
     const [galleryPreviews, setGalleryPreviews] = useState([]);
+    const [removedGalleryKeys, setRemovedGalleryKeys] = useState([]);
 
     const coverInputRef = useRef(null);
     const galleryInputRef = useRef(null);
@@ -90,13 +91,23 @@ export default function GeneralTab() {
         if (!isCreating) setIsEditing(true);
     };
 
+    const removeExistingGalleryImage = (key) => {
+        setRemovedGalleryKeys(prev => [...prev, key]);
+        if (!isCreating) setIsEditing(true);
+    };
+
     const handleSave = async () => {
         if (!program) return;
 
         try {
             await updateProgram.mutateAsync({
                 programId: program.meditation_program_id,
-                data: formData
+                data: {
+                    ...formData,
+                    removeGalleryImageKeys: removedGalleryKeys.length > 0 ? removedGalleryKeys : undefined
+                },
+                coverImage: coverImageFile,
+                galleryImages: galleryFiles.length > 0 ? galleryFiles : undefined
             });
 
             toast({
@@ -104,6 +115,12 @@ export default function GeneralTab() {
                 description: "Program updated successfully",
             });
             setIsEditing(false);
+            // Reset image state after successful save
+            setCoverImageFile(null);
+            setCoverImagePreview(null);
+            setGalleryFiles([]);
+            setGalleryPreviews([]);
+            setRemovedGalleryKeys([]);
         } catch (error) {
             toast({
                 title: "Error",
@@ -206,6 +223,10 @@ export default function GeneralTab() {
     // Get existing images from program
     const existingCoverImage = program?.cover_image_url;
     const existingGalleryImages = program?.gallery_image_urls || [];
+    // gallery_images has {key, url} pairs for identifying images for removal
+    const existingGalleryImagesWithKeys = (program?.gallery_images || []).filter(
+        img => !removedGalleryKeys.includes(img.key)
+    );
 
     return (
         <div className="space-y-8 max-w-4xl">
@@ -397,18 +418,25 @@ export default function GeneralTab() {
                 <CardContent>
                     <div className="space-y-6">
                         {/* Existing Gallery Images */}
-                        {existingGalleryImages.length > 0 && (
+                        {existingGalleryImagesWithKeys.length > 0 && (
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">Current Images</Label>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {existingGalleryImages.map((url, index) => (
-                                        <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                    {existingGalleryImagesWithKeys.map((image, index) => (
+                                        <div key={`existing-${image.key}`} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
-                                                src={url}
+                                                src={image.url}
                                                 alt={`Gallery ${index + 1}`}
                                                 className="w-full h-full object-cover"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExistingGalleryImage(image.key)}
+                                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
