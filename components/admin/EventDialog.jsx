@@ -53,11 +53,12 @@ export default function EventDialog({ open, onOpenChange, eventToEdit = null }) 
 
         try {
             if (isEditing) {
-                // Update Event
-                // Note: Image updates are not supported by the update endpoint as per backend docs
+                // Update Event with optional image changes
                 await updateEventMutation.mutateAsync({
                     id: eventToEdit.event_id,
-                    ...eventData
+                    eventData,
+                    coverImage,
+                    galleryImages,
                 });
             } else {
                 // Create Event

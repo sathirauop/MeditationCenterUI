@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, ImageIcon, Replace, Plus } from 'lucide-react';
 
 // Validation schema
 const eventSchema = z.object({
@@ -32,8 +32,22 @@ const eventSchema = z.object({
 });
 
 export default function EventForm({ onSubmit, isLoading, initialData = null }) {
-  const [coverImage, setCoverImage] = useState(null);
-  const [galleryImages, setGalleryImages] = useState([]);
+  const isEditing = !!initialData;
+
+  // Cover image state
+  const [coverImage, setCoverImage] = useState(null); // New file to upload
+  const [existingCoverUrl, setExistingCoverUrl] = useState(
+    initialData?.cover_image_url || null
+  );
+  const [coverRemoved, setCoverRemoved] = useState(false);
+  const coverInputRef = useRef(null);
+
+  // Gallery images state
+  const [newGalleryImages, setNewGalleryImages] = useState([]); // New files to upload
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState(
+    initialData?.gallery_image_urls ? [...initialData.gallery_image_urls] : []
+  );
+  const galleryInputRef = useRef(null);
 
   const defaultValues = initialData ? {
     name: initialData.name,
@@ -56,32 +70,71 @@ export default function EventForm({ onSubmit, isLoading, initialData = null }) {
     defaultValues,
   });
 
+  // ---- Cover Image Handlers ----
   const handleCoverImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setCoverImage(file);
+      setCoverRemoved(false);
     }
-  };
-
-  const handleGalleryImagesChange = (e) => {
-    const files = Array.from(e.target.files || []);
-    setGalleryImages((prev) => [...prev, ...files]);
   };
 
   const removeCoverImage = () => {
     setCoverImage(null);
+    setExistingCoverUrl(null);
+    setCoverRemoved(true);
+    if (coverInputRef.current) {
+      coverInputRef.current.value = '';
+    }
   };
 
-  const removeGalleryImage = (index) => {
-    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  const replaceCoverImage = () => {
+    if (coverInputRef.current) {
+      coverInputRef.current.click();
+    }
   };
 
+  // ---- Gallery Image Handlers ----
+  const handleGalleryImagesChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    setNewGalleryImages((prev) => [...prev, ...files]);
+    // Reset input so the same file can be selected again
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
+    }
+  };
+
+  const removeNewGalleryImage = (index) => {
+    setNewGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingGalleryImage = (index) => {
+    setExistingGalleryUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ---- Form Submit ----
   const onFormSubmit = async (data) => {
-    await onSubmit(data, coverImage, galleryImages);
+    // Only pass new gallery images (File objects) to the parent
+    const galleryImagesToUpload = newGalleryImages.length > 0 ? newGalleryImages : [];
+
+    await onSubmit(data, coverImage, galleryImagesToUpload);
+
     if (!initialData) {
       reset();
       setCoverImage(null);
-      setGalleryImages([]);
+      setExistingCoverUrl(null);
+      setCoverRemoved(false);
+      setNewGalleryImages([]);
+      setExistingGalleryUrls([]);
+    }
+  };
+
+  // ---- Helper: Generate preview URL for a File ----
+  const getFilePreviewUrl = (file) => {
+    try {
+      return URL.createObjectURL(file);
+    } catch {
+      return null;
     }
   };
 
@@ -198,75 +251,201 @@ export default function EventForm({ onSubmit, isLoading, initialData = null }) {
         )}
       </div>
 
-      {/* Cover Image */}
-      <div className="space-y-2">
-        <Label htmlFor="coverImage">Cover Image (Optional)</Label>
-        <div className="flex items-center gap-4">
-          <Input
-            id="coverImage"
-            type="file"
-            accept="image/*"
-            onChange={handleCoverImageChange}
-            disabled={isLoading || coverImage !== null}
-            className="flex-1"
-          />
-          {coverImage && (
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">{coverImage.name}</span>
+      {/* ============ COVER IMAGE SECTION ============ */}
+      <div className="space-y-3">
+        <Label className="text-base font-medium flex items-center gap-2">
+          <ImageIcon className="h-4 w-4" />
+          Cover Image
+          <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
+        </Label>
+
+        {/* Hidden file input */}
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleCoverImageChange}
+          disabled={isLoading}
+          className="hidden"
+        />
+
+        {/* Show existing cover image OR new cover image preview */}
+        {(coverImage || (existingCoverUrl && !coverRemoved)) ? (
+          <div className="relative group rounded-lg overflow-hidden border border-border bg-muted/30">
+            <div className="aspect-video w-full max-h-48 flex items-center justify-center overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverImage ? getFilePreviewUrl(coverImage) : existingCoverUrl}
+                alt="Cover preview"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
               <Button
                 type="button"
-                variant="ghost"
-                size="icon"
+                variant="secondary"
+                size="sm"
+                onClick={replaceCoverImage}
+                disabled={isLoading}
+                className="shadow-lg"
+              >
+                <Replace className="h-3.5 w-3.5 mr-1.5" />
+                Replace
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
                 onClick={removeCoverImage}
                 disabled={isLoading}
+                className="shadow-lg"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5 mr-1.5" />
+                Remove
               </Button>
             </div>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Upload a cover image for the event
-        </p>
+            {/* Badge showing file name or "Current" */}
+            <div className="absolute bottom-0 left-0 right-0 px-3 py-1.5 bg-gradient-to-t from-black/60 to-transparent">
+              <p className="text-xs text-white truncate">
+                {coverImage ? `📎 ${coverImage.name}` : '✅ Current cover image'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => coverInputRef.current?.click()}
+            disabled={isLoading}
+            className="w-full border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Click to upload a cover image
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              JPEG, PNG, GIF, WebP — Max 5MB
+            </p>
+          </button>
+        )}
       </div>
 
-      {/* Gallery Images */}
-      <div className="space-y-2">
-        <Label htmlFor="galleryImages">Gallery Images (Optional)</Label>
-        <Input
-          id="galleryImages"
+      {/* ============ GALLERY IMAGES SECTION ============ */}
+      <div className="space-y-3">
+        <Label className="text-base font-medium flex items-center gap-2">
+          <ImageIcon className="h-4 w-4" />
+          Gallery Images
+          <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
+        </Label>
+
+        {/* Hidden file input for gallery */}
+        <input
+          ref={galleryInputRef}
           type="file"
           accept="image/*"
           multiple
           onChange={handleGalleryImagesChange}
           disabled={isLoading}
+          className="hidden"
         />
-        {galleryImages.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {galleryImages.map((file, index) => (
-              <div key={index} className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground flex-1">{file.name}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeGalleryImage(index)}
-                  disabled={isLoading}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+
+        {/* Gallery grid: existing + new images */}
+        {(existingGalleryUrls.length > 0 || newGalleryImages.length > 0) && (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {/* Existing gallery images */}
+            {existingGalleryUrls.map((url, index) => (
+              <div
+                key={`existing-${index}`}
+                className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted/30"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={`Gallery ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="h-7 w-7 shadow-lg"
+                    onClick={() => removeExistingGalleryImage(index)}
+                    disabled={isLoading}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-[10px] text-white/80 truncate">Current</p>
+                </div>
               </div>
             ))}
+
+            {/* New gallery images (to be uploaded) */}
+            {newGalleryImages.map((file, index) => (
+              <div
+                key={`new-${index}`}
+                className="relative group aspect-square rounded-lg overflow-hidden border-2 border-primary/30 bg-muted/30"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getFilePreviewUrl(file)}
+                  alt={file.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="h-7 w-7 shadow-lg"
+                    onClick={() => removeNewGalleryImage(index)}
+                    disabled={isLoading}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-[10px] text-emerald-300 truncate">📎 New</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Add more button */}
+            <button
+              type="button"
+              onClick={() => galleryInputRef.current?.click()}
+              disabled={isLoading}
+              className="aspect-square border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-1 hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="h-5 w-5 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground">Add More</span>
+            </button>
           </div>
         )}
-        <p className="text-xs text-muted-foreground">
-          Upload multiple images for the event gallery
-        </p>
+
+        {/* Empty state: no images yet */}
+        {existingGalleryUrls.length === 0 && newGalleryImages.length === 0 && (
+          <button
+            type="button"
+            onClick={() => galleryInputRef.current?.click()}
+            disabled={isLoading}
+            className="w-full border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Click to upload gallery images
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Select multiple images — JPEG, PNG, GIF, WebP — Max 5MB each
+            </p>
+          </button>
+        )}
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end gap-3">
-        <Button type="submit" disabled={isLoading}>
+      <div className="flex justify-end gap-3 pt-2">
+        <Button type="submit" disabled={isLoading} size="lg">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? (initialData ? 'Updating...' : 'Creating...') : (initialData ? 'Update Event' : 'Create Event')}
         </Button>
